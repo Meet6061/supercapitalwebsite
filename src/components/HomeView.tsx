@@ -168,7 +168,7 @@ export default function HomeView({ setView }: Props) {
         <div style={hs.vignette} />
         <div style={hs.strip}>
           <div style={hs.pill}><span style={hs.pillDot} />Category III Alternative Investment Fund · SEBI Registered</div>
-          <span style={hs.year}>Est. 2024</span>
+          <span style={hs.year}>Est. 2026</span>
         </div>
         <div style={hs.canvasWrap}><HeroCanvas /></div>
         <div style={hs.body}>
