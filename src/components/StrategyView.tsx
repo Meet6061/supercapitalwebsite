@@ -2,100 +2,129 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Label, Display, It, Body, PageFooter } from './UI';
 
-// ─── Strategy Hero Canvas: Research → Analysis → Allocation → Monitoring ────
+// ─── Strategy Hero Canvas: Four-lane signal flow ─────────────────────────────
+// Four horizontal waveform lanes, each representing a discipline.
+// Clean, unique vs FundView's geometric lattice. No neon, no blur/shadow mess.
 function StrategyHeroCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const cv = ref.current; if (!cv) return;
     const ctx = cv.getContext('2d')!;
-    const W = 400, H = 460;
+    const W = 480, H = 460;
     let t = 0, raf: number;
 
-    const stages = [
-      { x: 200, y: 70,  r: 42, label: 'RESEARCH',   sub: 'Idea Generation',   color: '#0B6E6A' },
-      { x: 200, y: 185, r: 36, label: 'ANALYSIS',   sub: 'Fundamental',       color: '#0B6E6A' },
-      { x: 200, y: 290, r: 36, label: 'ALLOCATION', sub: 'Portfolio Fit',     color: '#1840A8' },
-      { x: 200, y: 390, r: 36, label: 'MONITORING', sub: 'Risk & Review',     color: '#1840A8' },
+    // Four signal lanes
+    const lanes = [
+      { label: 'RESEARCH',   sub: 'Idea Generation',    y: 82,  amp: 18, freq: 1.4, phase: 0,    color: '#0B6E6A', alpha: 0.85 },
+      { label: 'ANALYSIS',   sub: 'Fundamental Quality', y: 186, amp: 14, freq: 1.9, phase: 1.1,  color: '#0B6E6A', alpha: 0.65 },
+      { label: 'ALLOCATION', sub: 'Portfolio Sizing',    y: 290, amp: 16, freq: 1.6, phase: 2.3,  color: '#1840A8', alpha: 0.70 },
+      { label: 'MONITORING', sub: 'Risk & Review',       y: 390, amp: 12, freq: 2.2, phase: 3.5,  color: '#1840A8', alpha: 0.55 },
     ];
 
-    // Stream particles going top-to-bottom
-    interface SP { stage: number; t: number; spd: number; side: number; }
-    const particles: SP[] = [];
-    for (let i = 0; i < 20; i++) {
-      particles.push({ stage: Math.floor(Math.random() * 3), t: Math.random(), spd: 0.006 + Math.random() * 0.005, side: Math.random() > 0.5 ? 1 : -1 });
+    // Moving scan-line position (0→1 across the wave area)
+    const WAVE_X0 = 158, WAVE_X1 = W - 28;
+
+    function drawWave(lane: typeof lanes[0], scanX: number) {
+      const { y, amp, freq, phase, color } = lane;
+      const steps = 200;
+      ctx.beginPath();
+      for (let i = 0; i <= steps; i++) {
+        const px = WAVE_X0 + (i / steps) * (WAVE_X1 - WAVE_X0);
+        const nx = i / steps; // 0..1
+        // Compound wave for organic feel
+        const wy = y
+          + Math.sin(nx * freq * Math.PI * 2 + phase + t * 0.55) * amp
+          + Math.sin(nx * freq * 0.5 * Math.PI * 2 + phase * 1.3 + t * 0.3) * amp * 0.35;
+        i === 0 ? ctx.moveTo(px, wy) : ctx.lineTo(px, wy);
+      }
+      ctx.strokeStyle = color + Math.round(lane.alpha * 255).toString(16).padStart(2, '0');
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Traveling dot on the wave
+      const dotNx = ((t * 0.012 + phase * 0.15) % 1 + 1) % 1;
+      const dotX = WAVE_X0 + dotNx * (WAVE_X1 - WAVE_X0);
+      const dotY = y
+        + Math.sin(dotNx * freq * Math.PI * 2 + phase + t * 0.55) * amp
+        + Math.sin(dotNx * freq * 0.5 * Math.PI * 2 + phase * 1.3 + t * 0.3) * amp * 0.35;
+
+      // Outer ring (soft, no glow/blur)
+      ctx.beginPath(); ctx.arc(dotX, dotY, 6, 0, Math.PI * 2);
+      ctx.strokeStyle = color + '30'; ctx.lineWidth = 1; ctx.stroke();
+      // Inner fill
+      ctx.beginPath(); ctx.arc(dotX, dotY, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = color + 'cc'; ctx.fill();
+
+      // Vertical scan cursor at scanX
+      const scanNx = (scanX - WAVE_X0) / (WAVE_X1 - WAVE_X0);
+      const scanY = y
+        + Math.sin(scanNx * freq * Math.PI * 2 + phase + t * 0.55) * amp
+        + Math.sin(scanNx * freq * 0.5 * Math.PI * 2 + phase * 1.3 + t * 0.3) * amp * 0.35;
+      ctx.beginPath(); ctx.arc(scanX, scanY, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(242,240,235,0.95)'; ctx.fill();
+      ctx.strokeStyle = color + 'aa'; ctx.lineWidth = 1.2; ctx.stroke();
     }
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-      t += 0.013;
+      t += 0.022;
 
-      // Vertical connecting lines between nodes
-      for (let i = 0; i < stages.length - 1; i++) {
-        const a = stages[i], b = stages[i + 1];
-        const ax = a.x, ay = a.y + a.r, bx = b.x, by = b.y - b.r;
-        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
-        ctx.strokeStyle = 'rgba(11,110,106,0.12)';
-        ctx.lineWidth = 1.5; ctx.stroke();
+      // Faint horizontal baseline for each lane
+      lanes.forEach(lane => {
+        ctx.beginPath();
+        ctx.moveTo(WAVE_X0, lane.y);
+        ctx.lineTo(WAVE_X1, lane.y);
+        ctx.strokeStyle = 'rgba(0,0,0,0.055)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      // Vertical scan line traveling across
+      const scanNorm = (Math.sin(t * 0.18) + 1) / 2;
+      const scanX = WAVE_X0 + scanNorm * (WAVE_X1 - WAVE_X0);
+      ctx.beginPath();
+      ctx.moveTo(scanX, lanes[0].y - 36);
+      ctx.lineTo(scanX, lanes[lanes.length - 1].y + 36);
+      ctx.strokeStyle = 'rgba(11,110,106,0.07)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Draw waves
+      lanes.forEach(lane => drawWave(lane, scanX));
+
+      // Left labels — large, elegant, no overlap
+      lanes.forEach((lane, i) => {
+        // Number
+        ctx.font = "400 11px 'DM Mono', monospace";
+        ctx.fillStyle = lane.color + '55';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`0${i + 1}`, WAVE_X0 - 56, lane.y);
+
+        // Main label — prominent, serif-flavoured mono
+        ctx.font = "600 13px 'DM Mono', monospace";
+        ctx.fillStyle = lane.color + 'cc';
+        ctx.textAlign = 'right';
+        ctx.fillText(lane.label, WAVE_X0 - 16, lane.y - 7);
+
+        // Sub-label
+        ctx.font = "400 9.5px 'DM Mono', monospace";
+        ctx.fillStyle = 'rgba(0,0,0,0.32)';
+        ctx.fillText(lane.sub, WAVE_X0 - 16, lane.y + 9);
+      });
+
+      // Connector ticks between lanes (left anchor)
+      for (let i = 0; i < lanes.length - 1; i++) {
+        const ya = lanes[i].y + 28, yb = lanes[i + 1].y - 28;
+        ctx.beginPath();
+        ctx.moveTo(WAVE_X0 - 16, ya);
+        ctx.lineTo(WAVE_X0 - 16, yb);
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
       }
-
-      // Stream particles
-      particles.forEach(p => {
-        p.t += p.spd;
-        if (p.t > 1) { p.t = 0; }
-        const a = stages[p.stage], b = stages[p.stage + 1] ?? stages[0];
-        const ay = a.y + a.r, by = b.y - b.r;
-        const py = ay + (by - ay) * p.t;
-        const px = a.x + p.side * Math.sin(p.t * Math.PI) * 3;
-        const grd = ctx.createRadialGradient(px, py, 0, px, py, 5);
-        grd.addColorStop(0, 'rgba(11,110,106,0.6)');
-        grd.addColorStop(1, 'transparent');
-        ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);
-        ctx.fillStyle = grd; ctx.fill();
-        ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(11,110,106,0.9)'; ctx.fill();
-      });
-
-      // Nodes
-      stages.forEach((s, i) => {
-        const pulse = (Math.sin(t * 1.2 + i * 0.9) + 1) / 2;
-        const { x, y, r } = s;
-
-        // Glow
-        const grd = ctx.createRadialGradient(x, y, 0, x, y, r + 24);
-        grd.addColorStop(0, s.color + '1a');
-        grd.addColorStop(1, 'transparent');
-        ctx.beginPath(); ctx.arc(x, y, r + 24, 0, Math.PI * 2);
-        ctx.fillStyle = grd; ctx.fill();
-
-        // Pulse ring
-        ctx.beginPath(); ctx.arc(x, y, r + 5 + pulse * 4, 0, Math.PI * 2);
-        ctx.strokeStyle = s.color + Math.floor((0.1 + pulse * 0.15) * 255).toString(16).padStart(2, '0');
-        ctx.lineWidth = 1; ctx.stroke();
-
-        // Node body
-        const fg = ctx.createRadialGradient(x - r * 0.2, y - r * 0.2, 0, x, y, r);
-        fg.addColorStop(0, 'rgba(255,255,255,0.98)');
-        fg.addColorStop(1, 'rgba(240,238,232,0.97)');
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fillStyle = fg; ctx.fill();
-        ctx.strokeStyle = s.color + (i === 0 ? 'aa' : '66');
-        ctx.lineWidth = i === 0 ? 1.8 : 1.2; ctx.stroke();
-
-        // Label
-        ctx.font = `600 ${i === 0 ? 8.5 : 8}px 'DM Mono', monospace`;
-        ctx.fillStyle = s.color;
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(s.label, x, y - 5);
-        ctx.font = `400 6.5px 'DM Mono', monospace`;
-        ctx.fillStyle = s.color + '88';
-        ctx.fillText(s.sub, x, y + 7);
-
-        // Right-side number label
-        ctx.font = `400 9px 'DM Mono', monospace`;
-        ctx.fillStyle = s.color + '55';
-        ctx.textAlign = 'left';
-        ctx.fillText(`0${i + 1}`, x + r + 12, y);
-      });
 
       ctx.textAlign = 'left';
       raf = requestAnimationFrame(draw);
@@ -104,7 +133,7 @@ function StrategyHeroCanvas() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  return <canvas ref={ref} width={400} height={460} style={{ display: 'block', maxWidth: '100%' }} />;
+  return <canvas ref={ref} width={480} height={460} style={{ display: 'block', maxWidth: '100%' }} />;
 }
 
 // ─── Pillar card with hover reveal ────────────────────────────────────────────
