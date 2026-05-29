@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, TrendingUp, BarChart3, Cpu, Target, Zap, Lock } from 'lucide-react';
 import type { AppView } from '../types';
-import HeroCanvas from './HeroCanvas';
 import {
   Label, Display, It, Body, Card, CardIcon, CardTitle, CardBody,
   Btn, Divider, Section, Grid, TwoCol, PageFooter,
@@ -10,7 +9,144 @@ import {
 
 interface Props { setView: (v: AppView) => void; }
 
-// Quantamental matrix animation — restarts on every scroll into view
+// ─────────────────────────────────────────────
+// HERO CANVAS — Light background, navy geometry
+// Unique: orbital orrery with capital flow paths
+// ─────────────────────────────────────────────
+function HeroOrrery() {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const cv = ref.current; if (!cv) return;
+    const ctx = cv.getContext('2d')!;
+    const W = 500, H = 500, cx = W / 2, cy = H / 2;
+    cv.width = W; cv.height = H;
+    let t = 0, raf: number;
+
+    // Ring definitions
+    const rings = [
+      { r: 56,  spd: 0.022, nodes: 3, nodeR: 9,  color: '#012956', label: 'MACRO' },
+      { r: 100, spd: -0.014, nodes: 4, nodeR: 7, color: '#012956', label: 'RESEARCH' },
+      { r: 148, spd: 0.009,  nodes: 5, nodeR: 6, color: '#012956', label: 'QUANT' },
+      { r: 198, spd: -0.005, nodes: 6, nodeR: 5, color: '#012956', label: 'REGIME' },
+    ];
+
+    // Capital flow particles along spokes
+    const flows = Array.from({ length: 18 }, (_, i) => ({
+      angle: (i / 18) * Math.PI * 2,
+      progress: Math.random(),
+      speed: 0.003 + Math.random() * 0.003,
+      targetRing: Math.floor(Math.random() * rings.length),
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Soft radial bg glow (light)
+      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 230);
+      grd.addColorStop(0, 'rgba(1,41,86,0.04)');
+      grd.addColorStop(0.6, 'rgba(1,41,86,0.02)');
+      grd.addColorStop(1, 'transparent');
+      ctx.fillStyle = grd; ctx.fillRect(0, 0, W, H);
+
+      // Fine grid
+      ctx.strokeStyle = 'rgba(1,41,86,0.04)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+      // Rings
+      rings.forEach((ring, ri) => {
+        ctx.beginPath(); ctx.arc(cx, cy, ring.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(1,41,86,${0.08 + ri * 0.015})`; ctx.lineWidth = 1; ctx.stroke();
+
+        // Nodes on this ring
+        for (let ni = 0; ni < ring.nodes; ni++) {
+          const angle = (ni / ring.nodes) * Math.PI * 2 + t * ring.spd;
+          const nx = cx + Math.cos(angle) * ring.r;
+          const ny = cy + Math.sin(angle) * ring.r;
+          const pulse = (Math.sin(t * 0.04 + ni * 1.3 + ri * 0.7) + 1) / 2;
+
+          // Glow halo
+          const halo = ctx.createRadialGradient(nx, ny, 0, nx, ny, ring.nodeR + 10);
+          halo.addColorStop(0, `rgba(1,41,86,${0.12 + pulse * 0.08})`);
+          halo.addColorStop(1, 'transparent');
+          ctx.beginPath(); ctx.arc(nx, ny, ring.nodeR + 10, 0, Math.PI * 2);
+          ctx.fillStyle = halo; ctx.fill();
+
+          // Node circle
+          ctx.beginPath(); ctx.arc(nx, ny, ring.nodeR, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(1,41,86,${0.08 + pulse * 0.06})`;
+          ctx.strokeStyle = `rgba(1,41,86,${0.3 + pulse * 0.2})`;
+          ctx.lineWidth = 1.2; ctx.fill(); ctx.stroke();
+
+          // Spoke to center (faint)
+          ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny);
+          ctx.strokeStyle = `rgba(1,41,86,0.05)`; ctx.lineWidth = 0.6; ctx.stroke();
+        }
+      });
+
+      // Capital flow particles
+      flows.forEach((fl) => {
+        fl.progress += fl.speed;
+        if (fl.progress > 1) { fl.progress = 0; fl.targetRing = Math.floor(Math.random() * rings.length); fl.angle = Math.random() * Math.PI * 2; }
+        const ring = rings[fl.targetRing];
+        const maxR = ring.r;
+        const r = fl.progress * maxR;
+        const px = cx + Math.cos(fl.angle) * r;
+        const py = cy + Math.sin(fl.angle) * r;
+        const alpha = Math.sin(fl.progress * Math.PI) * 0.5;
+        ctx.beginPath(); ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(1,41,86,${alpha})`; ctx.fill();
+      });
+
+      // Ticker dots on outermost ring
+      const outerR = rings[rings.length - 1].r;
+      for (let i = 0; i < 36; i++) {
+        const angle = (i / 36) * Math.PI * 2 + t * 0.003;
+        const x = cx + Math.cos(angle) * (outerR + 14);
+        const y = cy + Math.sin(angle) * (outerR + 14);
+        const pulse = (Math.sin(t * 0.05 + i * 0.4) + 1) / 2;
+        ctx.beginPath(); ctx.arc(x, y, i % 6 === 0 ? 2.5 : 1.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(1,41,86,${0.1 + pulse * 0.18})`; ctx.fill();
+      }
+
+      // Centre hub
+      const breath = 1 + Math.sin(t * 0.04) * 0.07;
+      ctx.beginPath(); ctx.arc(cx, cy, 24 * breath, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(242,240,235,0.98)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(1,41,86,0.45)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // Centre crosshair
+      [0, Math.PI / 2, Math.PI, Math.PI * 1.5].forEach(a => {
+        ctx.beginPath(); ctx.moveTo(cx + Math.cos(a + t * 0.02) * 10, cy + Math.sin(a + t * 0.02) * 10);
+        ctx.lineTo(cx + Math.cos(a + t * 0.02) * 18, cy + Math.sin(a + t * 0.02) * 18);
+        ctx.strokeStyle = 'rgba(1,41,86,0.35)'; ctx.lineWidth = 1.2; ctx.stroke();
+      });
+
+      // SC monogram at centre
+      ctx.font = "600 9px 'DM Mono', monospace";
+      ctx.fillStyle = 'rgba(1,41,86,0.7)';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('SC', cx, cy);
+
+      t += 1;
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <canvas ref={ref} width={500} height={500} style={{ display: 'block', maxWidth: '100%', opacity: 0.92 }} />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Quantamental scramble word
+// ─────────────────────────────────────────────
 function QuantamentalWord() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -24,110 +160,59 @@ function QuantamentalWord() {
     const TARGET = 'QUANTAMENTAL';
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
     let t = 0;
-
-    // Reset letters each time animation runs
     const letters = TARGET.split('').map((_, i) => ({
       locked: false,
       lockFrame: 48 + i * 11,
       scramble: CHARS[Math.floor(Math.random() * CHARS.length)],
     }));
-
-    let rippleActive = false;
-    let rippleT = 0;
-
     cancelAnimationFrame(rafRef.current);
-
     function frame() {
       ctx.clearRect(0, 0, W, H);
       t++;
-
-      const allLocked = letters.every(l => l.locked);
-      if (allLocked) {
-        if (rippleActive) {
-          rippleT++;
-          if (rippleT > 80) { rippleActive = false; }
-        } else if (t % 200 === 0) {
-          rippleActive = true; rippleT = 0;
-        }
-      }
-
       const charW = W / TARGET.length;
-
       TARGET.split('').forEach((ch, i) => {
         const l = letters[i];
         if (t >= l.lockFrame) l.locked = true;
         if (!l.locked) l.scramble = CHARS[Math.floor(Math.random() * CHARS.length)];
-
         const x = charW * i + charW / 2;
         const y = H / 2 - 4;
-
         if (!l.locked) {
-          // Scrambling phase: DM Mono muted flicker
-          const flicker = Math.random() > 0.55 ? 0.42 : 0.16;
+          const flicker = Math.random() > 0.55 ? 0.35 : 0.14;
           ctx.font = `400 20px 'DM Mono', monospace`;
-          ctx.fillStyle = `rgba(11,110,106,${flicker})`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          ctx.fillStyle = `rgba(1,41,86,${flicker})`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillText(l.scramble, x, y);
         } else {
-          // Locked: Playfair Display bold, clean solid teal, no glow, no dots
           ctx.font = `700 38px 'Playfair Display', 'Cormorant Garamond', serif`;
           ctx.fillStyle = '#012956';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillText(ch, x, y);
         }
       });
-
       rafRef.current = requestAnimationFrame(frame);
     }
     frame();
   }
 
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-
-    // Run once immediately on mount
+    const el = wrapRef.current; if (!el) return;
     runAnimation();
-
-    // Re-run every time the element enters the viewport (each scroll)
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            runAnimation();
-          }
-        });
-      },
+      (entries) => { entries.forEach(e => { if (e.isIntersecting) runAnimation(); }); },
       { threshold: 0.4 }
     );
     observer.observe(el);
-
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(rafRef.current);
-    };
+    return () => { observer.disconnect(); cancelAnimationFrame(rafRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div ref={wrapRef} style={{ display: 'inline-block' }}>
-      <canvas
-        ref={canvasRef}
-        width={560}
-        height={96}
-        style={{ display: 'block', maxWidth: '100%' }}
-      />
+      <canvas ref={canvasRef} width={560} height={96} style={{ display: 'block', maxWidth: '100%' }} />
       <div style={{
         fontFamily: "'DM Mono', monospace",
-        fontSize: '0.99rem',
-        letterSpacing: '0.28em',
-        textTransform: 'uppercase',
-        color: '#012956',
-        opacity: 0.65,
-        marginTop: '0.1rem',
-        paddingLeft: 4,
+        fontSize: '0.99rem', letterSpacing: '0.28em', textTransform: 'uppercase',
+        color: '#012956', opacity: 0.55, marginTop: '0.1rem', paddingLeft: 4,
       }}>
         investing approach
       </div>
@@ -149,7 +234,6 @@ const PHIL = [
   { n: '04', icon: <Cpu size={22} />, c: 'teal' as const, title: 'Probabilistic Positioning', body: 'Size allocation tied explicitly to probability metrics and reward-to-risk asymmetry — eliminating emotional bias from every decision.', tag: 'Disciplined Framework' },
 ];
 
-// USP cards for the fund banner
 const FUND_USP = [
   { icon: <Target size={16} />, label: '12–15 Positions', sub: 'Concentrated conviction' },
   { icon: <Zap size={16} />,    label: '0–100% Flexible', sub: 'Dynamic allocation' },
@@ -166,21 +250,21 @@ export default function HomeView({ setView }: Props) {
       <section style={hs.wrap}>
         <div style={hs.grid} />
         <div style={hs.vignette} />
+
+        {/* Top strip — pill tag */}
         <div style={hs.strip}>
           <div style={hs.pill}><span style={hs.pillDot} />Category III Alternative Investment Fund · SEBI Registered</div>
           <span style={hs.year}>Est. 2026</span>
         </div>
-        <div style={hs.canvasWrap}><HeroCanvas /></div>
+
+        {/* Hero canvas — RIGHT side, same light bg */}
+        <div style={hs.canvasWrap}><HeroOrrery /></div>
+
+        {/* Left content */}
         <div style={hs.body}>
           <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ duration:0.6 }}>
             <div style={hs.h1Main}>Super</div>
             <div style={hs.h1It}>Capital</div>
-            <div style={hs.h1Sub}></div>
-          </motion.div>
-
-          {/* SEBI tag below brand */}
-          <motion.div initial={{ opacity:0,y:16 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.15,duration:0.55 }}>
-            <div style={hs.sebiTag}>Category III AIF · SEBI Registered</div>
           </motion.div>
 
           {/* Quantamental word animation */}
@@ -207,7 +291,7 @@ export default function HomeView({ setView }: Props) {
             <motion.div {...wv} transition={{ duration:0.6 }}>
               <Label>About Super Capital</Label>
               <Display size="lg" style={{ marginBottom:'1.4rem' }}>Active research.<br /><It>Tactical precision.</It></Display>
-              <Body style={{ maxWidth:420, marginBottom:'2.5rem' }}>Super Performance Series I is an actively managed Category III AIF focused on long-term capital appreciation through concentrated investing, dynamic allocation, and disciplined research. The strategy combines quantitative intelligence, market regime assessment, and fundamental analysis to identify high-conviction opportunities across market cycles. Capital is allocated with a strong focus on risk-adjusted returns and efficient deployment over time.</Body>
+              <Body style={{ maxWidth:420, marginBottom:'2.5rem' }}>Super Performance Series I is an actively managed Category III AIF focused on long-term capital appreciation through concentrated investing, dynamic allocation, and disciplined research. The strategy combines quantitative intelligence, market regime assessment, and fundamental analysis to identify high-conviction opportunities across market cycles.</Body>
             </motion.div>
           </div>
           <Grid cols={2} gap={14}>
@@ -222,14 +306,14 @@ export default function HomeView({ setView }: Props) {
 
       <Divider />
 
-      {/* FUND BANNER — USP cards instead of stats */}
+      {/* FUND BANNER */}
       <Section>
         <motion.div {...wv} transition={{ duration:0.7 }} style={fb.wrap}>
           <div style={fb.bgGlow}/><div style={fb.bgGrid}/>
           <div style={fb.inner}>
             <div>
               <div style={fb.badge}><span style={fb.badgeDot}/>Active Fund · India Focused</div>
-              <div style={fb.name}>Super<br /><em style={{ fontStyle:'italic',color:'rgba(15,240,200,0.85)' }}>Performance</em><br />Series I</div>
+              <div style={fb.name}>Super<br /><em style={{ fontStyle:'italic',color:'rgba(160,195,255,0.9)' }}>Performance</em><br />Series I</div>
               <p style={fb.desc}>A Category III AIF deploying concentrated, research-led strategies across India's capital markets with dynamic risk overlays.</p>
               <div style={{ marginTop:'2rem' }}><Btn variant="ghost" onClick={() => setView('fund')}>View Fund Details</Btn></div>
             </div>
@@ -313,42 +397,40 @@ function PhilCard({ n, icon, c, title, body, tag }: { n:string;icon:React.ReactN
 }
 
 const hs:Record<string,React.CSSProperties>={
-  wrap:{position:'relative',minHeight:'100svh',paddingTop:72,display:'flex',flexDirection:'column',overflow:'hidden'},
-  grid:{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,0,0,0.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.055) 1px,transparent 1px)',backgroundSize:'72px 72px',animation:'gridDrift 18s linear infinite',pointerEvents:'none'},
-  vignette:{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 0%,rgba(242,240,235,0) 30%,rgba(242,240,235,0.65) 100%)',pointerEvents:'none'},
+  wrap:{position:'relative',minHeight:'100svh',paddingTop:72,display:'flex',flexDirection:'column',overflow:'hidden',background:'var(--bg)'},
+  grid:{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(1,41,86,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(1,41,86,0.04) 1px,transparent 1px)',backgroundSize:'72px 72px',animation:'gridDrift 18s linear infinite',pointerEvents:'none'},
+  vignette:{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 0%,rgba(242,240,235,0) 30%,rgba(242,240,235,0.55) 100%)',pointerEvents:'none'},
   strip:{position:'relative',zIndex:2,display:'flex',justifyContent:'space-between',alignItems:'center',padding:'26px 5vw 0'},
   pill:{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid rgba(0,0,0,0.16)',background:'rgba(255,255,255,0.6)',backdropFilter:'blur(8px)',borderRadius:100,padding:'6px 16px 6px 10px',fontFamily:"'DM Mono',monospace",fontSize:'0.62rem',letterSpacing:'0.15em',textTransform:'uppercase',color:'var(--ink-2)'},
   pillDot:{display:'inline-block',width:7,height:7,borderRadius:'50%',background:'var(--teal)'},
   year:{fontFamily:"'DM Mono',monospace",fontSize:'0.62rem',letterSpacing:'0.12em',color:'var(--ink-3)'},
-  canvasWrap:{position:'absolute',right:'3vw',top:'50%',transform:'translateY(-42%)',zIndex:1,pointerEvents:'none'},
+  canvasWrap:{position:'absolute',right:'3vw',top:'50%',transform:'translateY(-44%)',zIndex:1,pointerEvents:'none'},
   body:{position:'relative',zIndex:2,flex:1,display:'flex',flexDirection:'column',justifyContent:'center',padding:'50px 5vw 0'},
-  sebiTag:{fontFamily:"'DM Mono',monospace",fontSize:'0.58rem',letterSpacing:'0.22em',textTransform:'uppercase',color:'var(--teal)',marginBottom:'1.2rem',marginTop:'0.5rem',opacity:0.8},
-  quantWrap:{marginBottom:'1.8rem',marginTop:'0.4rem'},
+  quantWrap:{marginBottom:'1.8rem',marginTop:'1.2rem'},
   h1Main:{fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--ink)'},
   h1It:{fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--teal)',fontStyle:'italic'},
-  h1Sub:{fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--ink-3)'},
   desc:{fontSize:'clamp(0.95rem,1.2vw,1.05rem)',color:'var(--ink-2)',maxWidth:500,lineHeight:1.75,marginBottom:'2.5rem',fontWeight:300},
 };
 
 const fb:Record<string,React.CSSProperties>={
-  wrap:{borderRadius:24,background:'var(--bg-dark)',padding:'60px 5vw',position:'relative',overflow:'hidden',color:'#fff'},
-  bgGlow:{position:'absolute',inset:0,pointerEvents:'none',background:'radial-gradient(ellipse at 80% 50%,rgba(15,240,200,0.1) 0%,transparent 65%),radial-gradient(ellipse at 20% 80%,rgba(24,64,168,0.12) 0%,transparent 60%)'},
+  wrap:{borderRadius:24,background:'#011a3d',padding:'60px 5vw',position:'relative',overflow:'hidden',color:'#fff'},
+  bgGlow:{position:'absolute',inset:0,pointerEvents:'none',background:'radial-gradient(ellipse at 80% 50%,rgba(1,70,140,0.4) 0%,transparent 65%),radial-gradient(ellipse at 20% 80%,rgba(1,41,86,0.3) 0%,transparent 60%)'},
   bgGrid:{position:'absolute',inset:0,pointerEvents:'none',backgroundImage:'linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px)',backgroundSize:'48px 48px'},
   inner:{position:'relative',zIndex:1,display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6vw',alignItems:'center'},
   badge:{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid rgba(255,255,255,0.15)',borderRadius:100,padding:'5px 14px 5px 10px',fontFamily:"'DM Mono',monospace",fontSize:'0.6rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(255,255,255,0.6)',marginBottom:'1.5rem'},
-  badgeDot:{display:'inline-block',width:6,height:6,borderRadius:'50%',background:'#0ff0c8'},
+  badgeDot:{display:'inline-block',width:6,height:6,borderRadius:'50%',background:'rgba(160,195,255,0.9)'},
   name:{fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(2.4rem,4vw,4.2rem)',fontWeight:600,lineHeight:1.05,letterSpacing:'-0.025em',color:'#fff',marginBottom:'1rem'},
   desc:{fontSize:'0.92rem',color:'rgba(255,255,255,0.55)',lineHeight:1.8,maxWidth:400},
   uspGrid:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12},
   uspCard:{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:'1.4rem 1.2rem'},
-  uspIcon:{color:'#0ff0c8',marginBottom:'0.6rem',opacity:0.9},
+  uspIcon:{color:'rgba(160,195,255,0.9)',marginBottom:'0.6rem',opacity:0.9},
   uspLabel:{fontFamily:"'Bricolage Grotesque',sans-serif",fontSize:'0.95rem',fontWeight:500,color:'#fff',marginBottom:'0.25rem'},
   uspSub:{fontFamily:"'DM Mono',monospace",fontSize:'0.58rem',letterSpacing:'0.14em',textTransform:'uppercase',color:'rgba(255,255,255,0.35)'},
 };
 
 const ws:Record<string,React.CSSProperties>={
   wrap:{border:'1px solid var(--border-md)',borderRadius:24,background:'var(--bg-card)',padding:'56px 5vw',position:'relative',overflow:'hidden'},
-  bgGlow:{position:'absolute',inset:0,pointerEvents:'none',background:'radial-gradient(ellipse at 100% 50%,rgba(11,110,106,0.06) 0%,transparent 60%)'},
+  bgGlow:{position:'absolute',inset:0,pointerEvents:'none',background:'radial-gradient(ellipse at 100% 50%,rgba(1,41,86,0.05) 0%,transparent 60%)'},
   inner:{position:'relative',zIndex:1,display:'grid',gridTemplateColumns:'1fr 1.4fr',gap:'6vw',alignItems:'start'},
   left:{},
   right:{},

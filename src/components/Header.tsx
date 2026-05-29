@@ -28,10 +28,13 @@ export default function Header({ current, setView }: HeaderProps) {
     <header style={styles.header}>
       <div style={styles.inner}>
 
-        {/* Brand */}
+        {/* Brand — Logo image only */}
         <div style={styles.brand} onClick={() => nav('home')}>
-          <div style={styles.brandName}>Super Capital</div>
-          <div style={styles.brandSub}>Category III AIF · SEBI Registered</div>
+          <img
+            src="/logo.jpg"
+            alt="Super Capital"
+            style={{ height: 48, width: 'auto', display: 'block', objectFit: 'contain' }}
+          />
         </div>
 
         {/* Desktop Nav */}
@@ -87,7 +90,7 @@ export default function Header({ current, setView }: HeaderProps) {
 const styles: Record<string, React.CSSProperties> = {
   header: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-    background: 'rgba(242,240,235,0.85)',
+    background: 'rgba(242,240,235,0.88)',
     backdropFilter: 'blur(18px)',
     borderBottom: '1px solid rgba(0,0,0,0.09)',
   },
@@ -96,17 +99,8 @@ const styles: Record<string, React.CSSProperties> = {
     height: 72, padding: '0 5vw',
   },
   brand: {
-    cursor: 'pointer', lineHeight: 1.15,
-  },
-  brandName: {
-    fontFamily: "'Cormorant Garamond', 'Instrument Serif', serif",
-    fontSize: '1.65rem', fontWeight: 600, letterSpacing: '-0.03em',
-    color: 'var(--ink)',
-  },
-  brandSub: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: '0.52rem', color: 'var(--ink-3)',
-    letterSpacing: '0.18em', textTransform: 'uppercase',
+    cursor: 'pointer',
+    display: 'flex', alignItems: 'center',
   },
   nav: {
     display: 'flex', gap: '2.5rem', listStyle: 'none',

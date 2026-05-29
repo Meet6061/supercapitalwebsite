@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 const SEGS = [
-  { l: 'Expansion',    c: '#0B6E6A', s: -Math.PI / 2,          e: Math.PI / 6 + 0.08 },
-  { l: 'Consolidation',c: '#B8860B', s: Math.PI / 6 + 0.08,   e: 5 * Math.PI / 6 + 0.08 },
+  { l: 'Expansion',    c: '#012956', s: -Math.PI / 2,          e: Math.PI / 6 + 0.08 },
+  { l: 'Consolidation',c: '#1840A8', s: Math.PI / 6 + 0.08,   e: 5 * Math.PI / 6 + 0.08 },
   { l: 'Correction',   c: '#1840A8', s: 5 * Math.PI / 6 + 0.08, e: 3 * Math.PI / 2 },
 ];
 

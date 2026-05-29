@@ -15,8 +15,8 @@ function StrategyHeroCanvas() {
 
     // Four signal lanes
     const lanes = [
-      { label: 'RESEARCH',   sub: 'Idea Generation',    y: 82,  amp: 18, freq: 1.4, phase: 0,    color: '#0B6E6A', alpha: 0.85 },
-      { label: 'ANALYSIS',   sub: 'Fundamental Quality', y: 186, amp: 14, freq: 1.9, phase: 1.1,  color: '#0B6E6A', alpha: 0.65 },
+      { label: 'RESEARCH',   sub: 'Idea Generation',    y: 82,  amp: 18, freq: 1.4, phase: 0,    color: '#012956', alpha: 0.85 },
+      { label: 'ANALYSIS',   sub: 'Fundamental Quality', y: 186, amp: 14, freq: 1.9, phase: 1.1,  color: '#012956', alpha: 0.65 },
       { label: 'ALLOCATION', sub: 'Portfolio Sizing',    y: 290, amp: 16, freq: 1.6, phase: 2.3,  color: '#1840A8', alpha: 0.70 },
       { label: 'MONITORING', sub: 'Risk & Review',       y: 390, amp: 12, freq: 2.2, phase: 3.5,  color: '#1840A8', alpha: 0.55 },
     ];
@@ -87,7 +87,7 @@ function StrategyHeroCanvas() {
       ctx.beginPath();
       ctx.moveTo(scanX, lanes[0].y - 36);
       ctx.lineTo(scanX, lanes[lanes.length - 1].y + 36);
-      ctx.strokeStyle = 'rgba(11,110,106,0.07)';
+      ctx.strokeStyle = 'rgba(1,41,86,0.07)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -145,22 +145,22 @@ function PillarCard({ n, title, summary, detail }: { n: string; title: string; s
       onMouseLeave={() => setHov(false)}
       style={{
         background: 'var(--bg-card)',
-        border: `1px solid ${hov ? 'rgba(11,110,106,0.35)' : 'var(--border)'}`,
+        border: `1px solid ${hov ? 'rgba(1,41,86,0.35)' : 'var(--border)'}`,
         borderRadius: 18, padding: '2.2rem 2rem',
         transition: 'all 0.38s cubic-bezier(.22,.8,.4,1)',
         transform: hov ? 'translateY(-7px)' : 'none',
-        boxShadow: hov ? '0 24px 64px rgba(11,110,106,0.1), 0 4px 16px rgba(0,0,0,0.05)' : '0 1px 4px rgba(0,0,0,0.03)',
+        boxShadow: hov ? '0 24px 64px rgba(1,41,86,0.1), 0 4px 16px rgba(0,0,0,0.05)' : '0 1px 4px rgba(0,0,0,0.03)',
         cursor: 'default', position: 'relative', overflow: 'hidden', minHeight: 240,
       }}
     >
       <div style={{
         position: 'absolute', top: 0, left: '10%', right: '10%', height: 1,
-        background: `linear-gradient(90deg, transparent, rgba(11,110,106,${hov ? 0.7 : 0.2}), transparent)`,
+        background: `linear-gradient(90deg, transparent, rgba(1,41,86,${hov ? 0.7 : 0.2}), transparent)`,
         transition: 'opacity 0.4s',
       }} />
       <div style={{
         position: 'absolute', top: -50, right: -50, width: 130, height: 130, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(11,110,106,0.1) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(1,41,86,0.1) 0%, transparent 70%)',
         opacity: hov ? 1 : 0, transition: 'opacity 0.38s', pointerEvents: 'none',
       }} />
       <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.58rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--teal)', marginBottom: '1.2rem', opacity: 0.7 }}>Pillar {n}</div>
@@ -194,7 +194,7 @@ function StepCard({ n, title, items, delay }: { n: string; title: string; items:
       onMouseLeave={() => setHov(false)}
       style={{
         background: 'var(--bg-card)',
-        border: `1px solid ${hov ? 'rgba(11,110,106,0.3)' : 'var(--border)'}`,
+        border: `1px solid ${hov ? 'rgba(1,41,86,0.3)' : 'var(--border)'}`,
         borderTop: '2.5px solid var(--teal)',
         borderRadius: 16, padding: '1.8rem 1.6rem',
         transition: 'all 0.34s cubic-bezier(.22,.8,.4,1)',
@@ -241,17 +241,17 @@ function PortfolioConstCanvas() {
       const vis = Math.min(N, Math.floor(progressRef.current * N * 1.1));
       [90, 140].forEach(r => {
         ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(11,110,106,0.08)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.strokeStyle = 'rgba(1,41,86,0.08)'; ctx.lineWidth = 1; ctx.stroke();
       });
       for (let i = 1; i < vis; i++) {
         ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[i].x, nodes[i].y);
-        ctx.strokeStyle = `rgba(11,110,106,${0.10 + Math.sin(t + i * 0.5) * 0.03})`; ctx.lineWidth = 1; ctx.stroke();
+        ctx.strokeStyle = `rgba(1,41,86,${0.10 + Math.sin(t + i * 0.5) * 0.03})`; ctx.lineWidth = 1; ctx.stroke();
       }
       nodes.slice(0, vis).forEach((n, i) => {
         const pulse = (Math.sin(t * 0.9 + i * 0.8) + 1) / 2;
         if (i === 0) {
           const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r + 12);
-          g.addColorStop(0, 'rgba(11,110,106,0.15)'); g.addColorStop(1, 'transparent');
+          g.addColorStop(0, 'rgba(1,41,86,0.15)'); g.addColorStop(1, 'transparent');
           ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 12, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
           ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
           ctx.fillStyle = 'var(--teal)'; ctx.fill();
@@ -259,10 +259,10 @@ function PortfolioConstCanvas() {
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('CORE', n.x, n.y);
         } else {
           ctx.beginPath(); ctx.arc(n.x, n.y, n.r + pulse * 2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(11,110,106,${0.07 + pulse * 0.05})`; ctx.fill();
+          ctx.fillStyle = `rgba(1,41,86,${0.07 + pulse * 0.05})`; ctx.fill();
           ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(11,110,106,${0.22 + pulse * 0.12})`;
-          ctx.strokeStyle = 'rgba(11,110,106,0.38)'; ctx.lineWidth = 1;
+          ctx.fillStyle = `rgba(1,41,86,${0.22 + pulse * 0.12})`;
+          ctx.strokeStyle = 'rgba(1,41,86,0.38)'; ctx.lineWidth = 1;
           ctx.fill(); ctx.stroke();
         }
       });
@@ -320,7 +320,7 @@ function RiskFlowCanvas() {
     const W = 340, H = 200;
     let t = 0, raf: number;
     const boxes = [
-      { label: 'Market Conditions', x: 50,  y: 34, w: 110, color: '#0B6E6A' },
+      { label: 'Market Conditions', x: 50,  y: 34, w: 110, color: '#012956' },
       { label: 'Risk Assessment',   x: 170, y: 98, w: 110, color: '#1840A8' },
       { label: 'Portfolio Adjust.', x: 50,  y: 160, w: 110, color: '#555' },
     ];
@@ -388,7 +388,7 @@ function ProbCanvas() {
           if (d > 130) return;
           const pulse = (Math.sin(t + a.phase) + 1) / 2;
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(11,110,106,${0.06 + pulse * 0.12})`; ctx.lineWidth = 1; ctx.stroke();
+          ctx.strokeStyle = `rgba(1,41,86,${0.06 + pulse * 0.12})`; ctx.lineWidth = 1; ctx.stroke();
         });
       });
       // Nodes
@@ -396,17 +396,17 @@ function ProbCanvas() {
         const pulse = (Math.sin(t * 1.1 + p.phase) + 1) / 2;
         const r = 5 + pulse * 3;
         ctx.beginPath(); ctx.arc(p.x, p.y, r + 5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(11,110,106,${0.05 + pulse * 0.07})`; ctx.fill();
+        ctx.fillStyle = `rgba(1,41,86,${0.05 + pulse * 0.07})`; ctx.fill();
         ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(11,110,106,${0.35 + pulse * 0.35})`; ctx.fill();
+        ctx.fillStyle = `rgba(1,41,86,${0.35 + pulse * 0.35})`; ctx.fill();
         ctx.font = "500 7px 'DM Mono',monospace";
-        ctx.fillStyle = `rgba(11,110,106,${0.6 + pulse * 0.3})`;
+        ctx.fillStyle = `rgba(1,41,86,${0.6 + pulse * 0.3})`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         ctx.fillText(p.label, p.x, p.y + r + 5);
         // Probability
         const pct = Math.round(60 + pulse * 35);
         ctx.font = "500 6.5px 'DM Mono',monospace";
-        ctx.fillStyle = `rgba(11,110,106,${0.4 + pulse * 0.3})`;
+        ctx.fillStyle = `rgba(1,41,86,${0.4 + pulse * 0.3})`;
         ctx.textBaseline = 'bottom';
         ctx.fillText(pct + '%', p.x, p.y - r - 3);
       });
@@ -440,7 +440,7 @@ export default function StrategyView() {
       ═══════════════════════════════════════════════ */}
       <section style={{ paddingTop: 130, paddingBottom: 100, padding: '130px 5vw 100px', position: 'relative', overflow: 'hidden', minHeight: '88vh', display: 'flex', alignItems: 'center' }}>
         {/* Background grid */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(11,110,106,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(11,110,106,0.04) 1px,transparent 1px)', backgroundSize: '64px 64px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(1,41,86,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(1,41,86,0.04) 1px,transparent 1px)', backgroundSize: '64px 64px', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 75% 50%, rgba(242,240,235,0) 20%, rgba(242,240,235,0.72) 80%)', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6vw', alignItems: 'center', width: '100%' }}>
@@ -737,12 +737,12 @@ function PhilosophyList() {
             transition={{ delay: i * 0.18, duration: 0.5 }}
             style={{
               background: 'var(--bg-card)', border: '1px solid var(--border)',
-              borderLeft: `3px solid rgba(11,110,106,${0.3 + i * 0.14})`,
+              borderLeft: `3px solid rgba(1,41,86,${0.3 + i * 0.14})`,
               borderRadius: 12, padding: '1rem 1.4rem',
               display: 'flex', alignItems: 'center', gap: 14,
             }}
           >
-            <div style={{ width: 30, height: 30, borderRadius: '50%', background: `rgba(11,110,106,${0.07 + i * 0.07})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Mono',monospace", fontSize: '0.6rem', color: 'var(--teal)', flexShrink: 0 }}>{i + 1}</div>
+            <div style={{ width: 30, height: 30, borderRadius: '50%', background: `rgba(1,41,86,${0.07 + i * 0.07})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'DM Mono',monospace", fontSize: '0.6rem', color: 'var(--teal)', flexShrink: 0 }}>{i + 1}</div>
             <div style={{ fontSize: '0.9rem', color: 'var(--ink)' }}>{item}</div>
           </motion.div>
           {i < items.length - 1 && (
