@@ -136,17 +136,17 @@ function QuantamentalWord() {
 }
 
 const ABOUT_CARDS = [
-  { icon: <BarChart3 size={20} />, color: 'teal' as const, title: 'Macro Regime Intelligence', body: 'Systematic mapping of market cycles — Expansion, Consolidation, Correction — to calibrate allocation dynamically.' },
-  { icon: <Shield size={20} />,    color: 'blue' as const, title: 'Fundamental Research Depth', body: 'Rigorous bottom-up analysis of business quality, RoE trajectory, balance sheet strength, and management integrity.' },
-  { icon: <TrendingUp size={20} />, color: 'neutral' as const, title: 'Dynamic Capital Allocation', body: '0–100% flexible mandate across equity, debt, and derivatives — deployed only when conviction thresholds are met.' },
-  { icon: <Cpu size={20} />,       color: 'teal' as const, title: 'Quantitative Decision Systems', body: 'Probability-weighted models, threshold-based entry/exit frameworks, and statistical overlays on every capital decision.' },
+  { icon: <BarChart3 size={20} />, color: 'teal' as const, title: 'Research-Driven Investing', body: 'Combining deep fundamental research with disciplined portfolio construction to identify long-term wealth creation opportunities.' },
+  { icon: <Shield size={20} />,    color: 'blue' as const, title: 'Adaptive Capital Allocation', body: 'A flexible investment framework designed to respond to evolving market conditions and emerging opportunities.' },
+  { icon: <TrendingUp size={20} />, color: 'neutral' as const, title: 'Quantitative Insights', body: 'Proprietary analytical models and probabilistic frameworks enhance investment decision-making.' },
+  { icon: <Cpu size={20} />,       color: 'teal' as const, title: 'Risk-Conscious Approach', body: 'Capital preservation remains central through active monitoring, position sizing, and exposure management.' },
 ];
 
 const PHIL = [
-  { n: '01', icon: <BarChart3 size={22} />, c: 'teal' as const, title: 'Macro Regime Analysis', body: 'Capital flows, liquidity cycles, and policy indicators guide net exposure — expanding during growth, shifting defensive in corrections.', tag: 'Top-Down Intelligence' },
-  { n: '02', icon: <Shield size={22} />,    c: 'blue' as const, title: 'Bottom-Up Security Research', body: 'Deep competitive-advantage analysis, governance standards, consistent high RoE, and pristine balance sheets define every holding.', tag: 'Uncompromised Quality' },
-  { n: '03', icon: <TrendingUp size={22} />, c: 'neutral' as const, title: 'Active Tactical Allocation', body: 'Unlike index-bound managers, we deploy into cash, arbitrage indices, or debt based on structural opportunity — not mandate constraints.', tag: 'Absolute Returns Focus' },
-  { n: '04', icon: <Cpu size={22} />,       c: 'teal' as const, title: 'Probabilistic Positioning', body: 'Size allocation tied explicitly to probability metrics and reward-to-risk asymmetry — eliminating emotional bias from every decision.', tag: 'Disciplined Framework' },
+  { n: '01', icon: <BarChart3 size={22} />, c: 'teal' as const, title: 'Market Regime Intelligence', body: 'Assessing macro, liquidity, valuation, and market structure to understand prevailing market conditions.', tag: 'Top-Down Intelligence' },
+  { n: '02', icon: <Shield size={22} />,    c: 'blue' as const, title: 'Quantitative Analytics', body: 'Leveraging proprietary screeners, probabilistic models, and data-driven insights for decision support.', tag: '' },
+  { n: '03', icon: <TrendingUp size={22} />, c: 'neutral' as const, title: 'Fundamental Research', body: 'Evaluating business quality, growth potential, management capability, and financial strength.', tag: 'Absolute Returns Focus' },
+  { n: '04', icon: <Cpu size={22} />, c: 'teal' as const, title: 'Probabilistic Positioning', body: 'Size allocation tied explicitly to probability metrics and reward-to-risk asymmetry — eliminating emotional bias from every decision.', tag: 'Disciplined Framework' },
 ];
 
 // USP cards for the fund banner
@@ -175,7 +175,7 @@ export default function HomeView({ setView }: Props) {
           <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ duration:0.6 }}>
             <div style={hs.h1Main}>Super</div>
             <div style={hs.h1It}>Capital</div>
-            <div style={hs.h1Sub}>Asset Management.</div>
+            <div style={hs.h1Sub}> Asset Management</div>
           </motion.div>
 
           {/* SEBI tag below brand */}
@@ -191,7 +191,7 @@ export default function HomeView({ setView }: Props) {
           </motion.div>
 
           <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.3,duration:0.6 }}>
-            <p style={hs.desc}>We blend active fundamental research, probabilistic frameworks, and dynamic capital allocation to deliver long-term appreciation for India's most sophisticated investors.</p>
+            <p style={hs.desc}>Super Performance Series I is an actively managed Category III AIF focused on long-term capital appreciation through concentrated investing, dynamic allocation, and research-driven decision-making.</p>
           </motion.div>
           <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.4,duration:0.6 }} style={{ display:'flex',gap:'1rem',flexWrap:'wrap' }}>
             <Btn onClick={() => setView('fund')}>Explore the Fund</Btn>
@@ -207,7 +207,7 @@ export default function HomeView({ setView }: Props) {
             <motion.div {...wv} transition={{ duration:0.6 }}>
               <Label>About Super Capital</Label>
               <Display size="lg" style={{ marginBottom:'1.4rem' }}>Active research.<br /><It>Tactical precision.</It></Display>
-              <Body style={{ maxWidth:420, marginBottom:'2.5rem' }}>Super Capital is an institutional alternative investment platform combining bottom-up fundamental research with quantitative decision frameworks. Every allocation is governed by regime analysis, probabilistic models, and disciplined risk controls — not sentiment or market benchmarks.</Body>
+              <Body style={{ maxWidth:420, marginBottom:'2.5rem' }}>Super Performance Series I is an actively managed Category III AIF focused on long-term capital appreciation through concentrated investing, dynamic allocation, and disciplined research. The strategy combines quantitative intelligence, market regime assessment, and fundamental analysis to identify high-conviction opportunities across market cycles. Capital is allocated with a strong focus on risk-adjusted returns and efficient deployment over time.</Body>
             </motion.div>
           </div>
           <Grid cols={2} gap={14}>
