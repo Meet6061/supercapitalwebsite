@@ -443,7 +443,7 @@ export default function StrategyView() {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(1,41,86,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(1,41,86,0.04) 1px,transparent 1px)', backgroundSize: '64px 64px', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 75% 50%, rgba(242,240,235,0) 20%, rgba(242,240,235,0.72) 80%)', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6vw', alignItems: 'center', width: '100%' }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: '6vw', alignItems: 'center', width: '100%' }}>
           {/* Left: text */}
           <div>
             <motion.div {...wv(0)}>
@@ -503,7 +503,7 @@ export default function StrategyView() {
           SECTION 3 · FOUR PILLARS
       ═══════════════════════════════════════════════ */}
       <section style={{ padding: '100px 5vw' }}>
-        <motion.div {...wv(0)} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6vw', alignItems: 'end', marginBottom: '3.5rem' }}>
+        <motion.div {...wv(0)} style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: '6vw', alignItems: 'end', marginBottom: '3.5rem' }}>
           <div>
             <Label>The Quantamental Edge</Label>
             <Display size="lg">Four pillars of our<br /><It>investment discipline.</It></Display>
@@ -512,7 +512,7 @@ export default function StrategyView() {
             Each pillar works in concert — no single system drives decisions. Hover any card to see the operational detail behind each pillar.
           </Body>
         </motion.div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : 'repeat(4, 1fr)', gap: 16 }}>
           {[
             {
               n: '1', title: 'Market Regime Intelligence',
@@ -552,7 +552,7 @@ export default function StrategyView() {
           <Label>Research Process</Label>
           <Display size="lg" style={{ maxWidth: 480 }}>From idea to <It>conviction.</It></Display>
         </motion.div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, position: 'relative' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : 'repeat(4, 1fr)', gap: 16, position: 'relative' }}>
           {/* Connecting line */}
           <div style={{ position: 'absolute', top: -1, left: '12.5%', right: '12.5%', height: 1, background: 'linear-gradient(90deg, transparent, var(--teal), transparent)', opacity: 0.15 }} />
           {[
@@ -584,7 +584,7 @@ export default function StrategyView() {
           SECTION 5 · PORTFOLIO CONSTRUCTION
       ═══════════════════════════════════════════════ */}
       <section style={{ padding: '100px 5vw' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
           <motion.div {...wv(0)}>
             <Label>Portfolio Construction</Label>
             <Display size="lg" style={{ marginBottom: '1.4rem' }}>
@@ -650,7 +650,7 @@ export default function StrategyView() {
           SECTION 7 · PROBABILISTIC INTELLIGENCE
       ═══════════════════════════════════════════════ */}
       <section style={{ padding: '100px 5vw' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
           <motion.div {...wv(0)}>
             <Label>Probabilistic Intelligence Layer</Label>
             <Display size="lg" style={{ marginBottom: '1.4rem' }}>
@@ -683,11 +683,11 @@ export default function StrategyView() {
           SECTION 8 · RISK MANAGEMENT
       ═══════════════════════════════════════════════ */}
       <section style={{ padding: '100px 5vw' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
           <motion.div {...wv(0)} style={{ display: 'flex', justifyContent: 'center' }}>
             <div>
               <RiskFlowCanvas />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: 12, marginTop: 24 }}>
                 {[
                   ['Tactical Hedging',  'Systematic downside protection'],
                   ['Cash Flexibility',  '0–100% allocation range'],

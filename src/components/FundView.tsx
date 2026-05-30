@@ -5,6 +5,7 @@ import type { AppView } from '../types';
 
 interface Props { setView: (v: AppView) => void; }
 
+
 // ─────────────────────────────────────────────
 // HERO GRAPHIC — Elegant geometric lattice
 // Light background, navy palette
@@ -274,12 +275,12 @@ export default function FundView({ setView }: Props) {
     <div>
 
       {/* ═══ SECTION 1 · FUND INTRODUCTION ═══ */}
-      <section style={{ position: 'relative', padding: '140px 5vw 100px', overflow: 'hidden', minHeight: '90vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <section style={{ position: 'relative', padding: typeof window !== 'undefined' && window.innerWidth <= 768 ? '100px 5vw 60px' : '140px 5vw 100px', overflow: 'hidden', minHeight: '90vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Subtle bg grid */}
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(1,41,86,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(1,41,86,0.04) 1px,transparent 1px)', backgroundSize: '64px 64px', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 50%, rgba(1,41,86,0.04) 0%, transparent 60%)', pointerEvents: 'none' }} />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4vw', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: '4vw', alignItems: 'center', position: 'relative', zIndex: 1 }}>
           <div>
             <motion.div {...wv(0)}>
               <Label>Super Performance Series I</Label>
@@ -318,7 +319,7 @@ export default function FundView({ setView }: Props) {
             What sets our approach <It>apart.</It>
           </Display>
         </motion.div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : 'repeat(3, 1fr)', gap: 20 }}>
           <AdvantageCard n="01" delay={0} title="Dynamic Market Regime Investing" body="Capital allocation adapts continuously to changing market environments. The fund moves fluidly across expansion, consolidation, and correction cycles — always positioned for prevailing conditions." />
           <AdvantageCard n="02" delay={0.12} title="Concentrated High-Conviction Portfolio" body="A focused portfolio of approximately 12–15 carefully selected positions. Concentration is a feature, not a risk — it reflects the depth of conviction behind every holding." />
           <AdvantageCard n="03" delay={0.24} title="Quantitative Intelligence, Human Judgment" body="Proprietary probabilistic models and analytical frameworks inform every decision. Technology amplifies research — it does not replace it." />
@@ -329,7 +330,7 @@ export default function FundView({ setView }: Props) {
 
       {/* ═══ SECTION 3 · INVESTMENT UNIVERSE ═══ */}
       <section style={{ padding: '100px 5vw' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8vw', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: typeof window !== 'undefined' && window.innerWidth <= 768 ? '2rem' : '8vw', alignItems: 'center' }}>
           <motion.div {...wv(0)}>
             <Label>Investment Universe</Label>
             <Display size="lg" style={{ marginBottom: '1.4rem' }}>
@@ -338,7 +339,7 @@ export default function FundView({ setView }: Props) {
             <Body style={{ marginBottom: '2.5rem' }}>
               The fund operates with 0–100% allocation flexibility across the full investment universe — enabling disciplined capital deployment wherever risk-reward conditions are most compelling.
             </Body>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : '1fr 1fr', gap: 10 }}>
               {[
                 ['Listed Equity', 'Primary growth engine'],
                 ['Unlisted Equity', 'Early-stage conviction plays'],
@@ -368,7 +369,7 @@ export default function FundView({ setView }: Props) {
             Structured for enduring <It>partnership.</It>
           </Display>
         </motion.div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1fr' : 'repeat(4, 1fr)', gap: 16 }}>
           {[
             { n: '1', title: 'Investor Alignment', body: 'Structured around long-term wealth creation with aligned incentives that reward sustainable outperformance, not short-term results.' },
             { n: '2', title: 'Active Stewardship', body: 'Continuous research, portfolio monitoring, and proactive management across full market cycles and changing environments.' },

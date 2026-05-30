@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Label, Display, It, Body, TwoCol, Section, PageFooter } from './UI';
+import { Label, Display, It, Body, Section, PageFooter } from './UI';
+
+function useMobile() {
+  const [mob, setMob] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const h = () => setMob(window.innerWidth <= 768);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return mob;
+}
 
 const INFO_ROWS = [
   ['Entity',     'Super Fund Managers LLP'],
@@ -11,21 +21,22 @@ const INFO_ROWS = [
 ];
 
 export default function ContactView() {
+  const mob = useMobile();
   return (
     <div>
-      <Section style={{ paddingTop: 120 }}>
+      <Section style={{ paddingTop: mob ? 100 : 120 }}>
         <motion.div initial={{ opacity:0,y:20 }} animate={{ opacity:1,y:0 }} transition={{ duration:0.6 }}>
           <Label>Investor Relations</Label>
           <Display size="xl" style={{ marginBottom:'1.4rem' }}>Connect<br /><It>with us.</It></Display>
           <Body style={{ maxWidth:500, marginBottom:'3.5rem' }}>For eligible investors and prospective capital allocators. We respond within 48 hours.</Body>
         </motion.div>
 
-        <TwoCol ratio="1fr 1.5fr" gap="5vw">
+        <div style={{ display:'grid',gridTemplateColumns: mob ? '1fr' : '1fr 1.5fr',gap: mob ? '2rem' : '5vw' }}>
           <motion.div initial={{ opacity:0,y:20 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.1,duration:0.6 }}>
             <div style={f.sectionLabel}>Contact Details</div>
             <div style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,overflow:'hidden' }}>
               {INFO_ROWS.map(([k,v],i) => (
-                <div key={k} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1rem 1.3rem',borderBottom:i<INFO_ROWS.length-1?'1px solid var(--border)':'none' }}>
+                <div key={k} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1rem 1.3rem',borderBottom:i<INFO_ROWS.length-1?'1px solid var(--border)':'none',flexWrap:'wrap',gap:'0.5rem' }}>
                   <span style={{ fontSize:'0.82rem',color:'var(--ink-3)' }}>{k}</span>
                   <span style={{ fontSize:'0.82rem',color:'var(--ink)',fontWeight:400 }}>{v}</span>
                 </div>
@@ -37,8 +48,14 @@ export default function ContactView() {
             <div style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,padding:'2rem' }}>
               <div style={f.sectionLabel}>Investor Inquiry Form</div>
               <div style={{ height:'1.4rem' }}/>
-              <FRow><FField label="Full Name" type="text" placeholder="Your name"/><FField label="Organisation" type="text" placeholder="Firm / Family Office"/></FRow>
-              <FRow><FField label="Email" type="email" placeholder="email@domain.com"/><FField label="Mobile" type="tel" placeholder="+91"/></FRow>
+              <div style={{ display:'grid',gridTemplateColumns: mob ? '1fr' : '1fr 1fr',gap:'1rem' }}>
+                <FField label="Full Name" type="text" placeholder="Your name"/>
+                <FField label="Organisation" type="text" placeholder="Firm / Family Office"/>
+              </div>
+              <div style={{ display:'grid',gridTemplateColumns: mob ? '1fr' : '1fr 1fr',gap:'1rem' }}>
+                <FField label="Email" type="email" placeholder="email@domain.com"/>
+                <FField label="Mobile" type="tel" placeholder="+91"/>
+              </div>
               <FSel label="Investor Type" options={['High Net-Worth Individual','Family Office','Institutional Investor','Sophisticated Investor']}/>
               <FField label="Intended Allocation (₹ Cr)" type="text" placeholder="e.g. 2–5 Crores"/>
               <div style={{ marginBottom:'1rem' }}>
@@ -48,16 +65,13 @@ export default function ContactView() {
               <button style={f.submit}>Submit Inquiry</button>
             </div>
           </motion.div>
-        </TwoCol>
+        </div>
       </Section>
       <PageFooter disc="This inquiry does not constitute a solicitation of securities. SEBI Cat. III AIF." />
     </div>
   );
 }
 
-function FRow({ children }:{ children:React.ReactNode }) {
-  return <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem' }}>{children}</div>;
-}
 function FField({ label,type,placeholder }:{ label:string;type:string;placeholder:string }) {
   return (
     <div style={{ marginBottom:'1rem' }}>

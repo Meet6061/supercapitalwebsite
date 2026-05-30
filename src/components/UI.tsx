@@ -1,5 +1,7 @@
 import React from 'react';
 
+function isMob() { return typeof window !== 'undefined' && window.innerWidth <= 768; }
+
 /* ── Label ── */
 export function Label({ children }: { children: React.ReactNode }) {
   return (
@@ -13,16 +15,16 @@ export function Label({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── Display heading (Instrument Serif) ── */
+/* ── Display heading ── */
 export function Display({
   children, size = 'lg', style = {}
 }: { children: React.ReactNode; size?: 'sm' | 'md' | 'lg' | 'xl'; style?: React.CSSProperties }) {
-  const sizes = { sm: 'clamp(1.5rem,2vw,2rem)', md: 'clamp(2rem,3vw,2.8rem)', lg: 'clamp(2.6rem,4.5vw,4rem)', xl: 'clamp(3.4rem,6.5vw,7rem)' };
+  const sizes = { sm: 'clamp(1.5rem,2vw,2rem)', md: 'clamp(2rem,3vw,2.8rem)', lg: 'clamp(2.2rem,4.5vw,4rem)', xl: 'clamp(2.6rem,6.5vw,7rem)' };
   return (
     <div style={{
       fontFamily: "'Instrument Serif', serif",
       fontSize: sizes[size], fontWeight: 400,
-      lineHeight: 1.05, letterSpacing: '-0.025em',
+      lineHeight: 1.1, letterSpacing: '-0.025em',
       color: 'var(--ink)', ...style,
     }}>
       {children}
@@ -30,7 +32,7 @@ export function Display({
   );
 }
 
-/* ── Italic accent span ── */
+/* ── Italic accent ── */
 export function It({ children }: { children: React.ReactNode }) {
   return <em style={{ fontStyle: 'italic', color: 'var(--teal)' }}>{children}</em>;
 }
@@ -130,24 +132,27 @@ export function Step({ num, title, desc }: { num: string; title: string; desc: s
   );
 }
 
-/* ── Section ── */
+/* ── Section — mobile: less padding ── */
 export function Section({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return <section style={{ padding: '90px 5vw', ...style }}>{children}</section>;
+  const mob = isMob();
+  return <section style={{ padding: mob ? '52px 5vw' : '90px 5vw', ...style }}>{children}</section>;
 }
 
-/* ── Grid ── */
+/* ── Grid — mobile: 1 col ── */
 export function Grid({ cols = 2, children, gap = 14 }: { cols?: number; children: React.ReactNode; gap?: number }) {
+  const mob = isMob();
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap }}>
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : `repeat(${cols}, 1fr)`, gap }}>
       {children}
     </div>
   );
 }
 
-/* ── TwoCol ── */
+/* ── TwoCol — mobile: single col ── */
 export function TwoCol({ children, ratio = '1fr 1fr', gap = '5vw', style = {} }: { children: React.ReactNode; ratio?: string; gap?: string; style?: React.CSSProperties }) {
+  const mob = isMob();
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: ratio, gap, alignItems: 'start', ...style }}>
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : ratio, gap: mob ? '2.5rem' : gap, alignItems: 'start', ...style }}>
       {children}
     </div>
   );
@@ -198,10 +203,11 @@ export function FeeTable({ rows }: { rows: [string, string][] }) {
 
 /* ── PageFooter ── */
 export function PageFooter({ disc }: { disc: string }) {
+  const mob = isMob();
   return (
-    <footer style={{ borderTop: '1px solid var(--border)', padding: '2rem 5vw', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+    <footer style={{ borderTop: '1px solid var(--border)', padding: '2rem 5vw', display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '1rem', flexWrap: 'wrap' }}>
       <div style={{ fontSize: '0.88rem', fontWeight: 500 }}>Super Capital · Super Capital Trust</div>
-      <div style={{ fontSize: '0.72rem', color: 'var(--ink-3)', maxWidth: 440, textAlign: 'right', lineHeight: 1.55 }}>{disc}</div>
+      <div style={{ fontSize: '0.72rem', color: 'var(--ink-3)', maxWidth: mob ? '100%' : 440, textAlign: mob ? 'left' : 'right', lineHeight: 1.55 }}>{disc}</div>
     </footer>
   );
 }

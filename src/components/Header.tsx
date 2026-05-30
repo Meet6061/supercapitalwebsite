@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import type { AppView } from '../types';
 import logoSrc from './logo.png';
@@ -18,6 +18,13 @@ const links: { view: AppView; label: string }[] = [
 
 export default function Header({ current, setView }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   function nav(v: AppView) {
     setView(v);
@@ -26,64 +33,72 @@ export default function Header({ current, setView }: HeaderProps) {
   }
 
   return (
-    <header style={styles.header}>
-      <div style={styles.inner}>
+    <header style={s.header}>
+      <div style={s.inner}>
 
-        <div style={styles.brand} onClick={() => nav('home')}>
-          <img
-            src={logoSrc}
-            alt="Super Capital"
-            style={styles.logoImg}
-          />
+        <div style={s.brand} onClick={() => nav('home')}>
+          <img src={logoSrc} alt="Super Capital" style={s.logoImg} />
         </div>
 
-        <nav style={styles.nav}>
-          {links.map(l => (
-            <button
-              key={l.view}
-              onClick={() => nav(l.view)}
-              style={{
-                ...styles.navLink,
-                color: current === l.view ? 'var(--ink)' : 'var(--ink-2)',
-                fontWeight: current === l.view ? 500 : 400,
-              }}
-            >
-              {l.label}
-            </button>
-          ))}
-        </nav>
+        {/* Desktop nav */}
+        {!isMobile && (
+          <nav style={s.nav}>
+            {links.map(l => (
+              <button
+                key={l.view}
+                onClick={() => nav(l.view)}
+                style={{
+                  ...s.navLink,
+                  color: current === l.view ? 'var(--ink)' : 'var(--ink-2)',
+                  fontWeight: current === l.view ? 500 : 400,
+                }}
+              >
+                {l.label}
+              </button>
+            ))}
+          </nav>
+        )}
 
-        <button style={styles.cta} onClick={() => nav('contact')}>
-          Connect
-        </button>
+        {/* Desktop CTA */}
+        {!isMobile && (
+          <button style={s.cta} onClick={() => nav('contact')}>Connect</button>
+        )}
 
-        <button style={styles.mobileToggle} onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {/* Mobile hamburger */}
+        {isMobile && (
+          <button style={s.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        )}
       </div>
 
-      {menuOpen && (
-        <div style={styles.drawer}>
+      {/* Mobile drawer */}
+      {isMobile && menuOpen && (
+        <div style={s.drawer}>
           {links.map(l => (
             <button
               key={l.view}
               onClick={() => nav(l.view)}
               style={{
-                ...styles.drawerLink,
+                ...s.drawerLink,
                 color: current === l.view ? 'var(--ink)' : 'var(--ink-2)',
                 fontWeight: current === l.view ? 500 : 300,
+                borderBottom: '1px solid var(--border)',
               }}
             >
               {l.label}
             </button>
           ))}
+          <button style={{ ...s.cta, marginTop: '1rem', width: '100%' }} onClick={() => nav('contact')}>
+            Connect
+          </button>
         </div>
       )}
     </header>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const s: Record<string, React.CSSProperties> = {
   header: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
     background: 'rgba(242,240,235,0.95)',
@@ -125,20 +140,20 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none', cursor: 'pointer',
     flexShrink: 0,
   },
-  mobileToggle: {
-    display: 'none',
+  hamburger: {
     background: 'none', border: 'none', cursor: 'pointer',
-    color: 'var(--ink)',
+    color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    padding: 8,
   },
   drawer: {
     borderTop: '1px solid var(--border)',
-    padding: '1rem 5vw',
-    display: 'flex', flexDirection: 'column', gap: '0.5rem',
-    background: 'rgba(242,240,235,0.97)',
+    padding: '1rem 5vw 1.5rem',
+    display: 'flex', flexDirection: 'column',
+    background: 'rgba(242,240,235,0.98)',
   },
   drawerLink: {
     background: 'none', border: 'none', cursor: 'pointer',
     fontFamily: "'Bricolage Grotesque', sans-serif",
-    fontSize: '1rem', padding: '0.5rem 0', textAlign: 'left',
+    fontSize: '1.05rem', padding: '0.9rem 0', textAlign: 'left',
   },
 };
