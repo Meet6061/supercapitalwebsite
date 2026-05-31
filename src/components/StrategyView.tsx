@@ -2,148 +2,123 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Label, Display, It, Body, PageFooter } from './UI';
 
-// ─── Strategy Hero Canvas: Globe facing India ────────────────────────────────
+// ─── Strategy Hero: Sacred Geometry ──────────────────────────────────────────
+// Concentric rotating polygons — clean lines, zero fill, zero glow
 function StrategyHeroCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const cv = ref.current; if (!cv) return;
     const ctx = cv.getContext('2d')!;
-    const W = 480, H = 460, cx = W / 2, cy = H / 2 - 10;
-    const R = 180;
+    const W = 480, H = 460, cx = W / 2, cy = H / 2;
     let t = 0, raf: number;
 
-    // Globe centred on India: 78°E, 20°N
-    const CLON = 78 * Math.PI / 180;
-    const CLAT = 20 * Math.PI / 180;
-
-    // Accurate India border [lon, lat] degrees
-    const INDIA_DEG: [number,number][] = [
-      [74.0,37.0],[73.5,36.8],[72.5,36.5],[71.5,35.9],[71.0,35.2],[70.5,34.5],
-      [70.3,33.8],[69.8,33.2],[69.5,32.4],[69.5,31.5],[69.0,30.5],[68.5,29.5],
-      [68.0,28.5],[67.5,27.5],[67.2,26.5],[67.5,25.5],[68.0,24.5],[68.5,23.8],
-      [68.8,23.0],[69.2,22.5],[69.8,22.2],[70.3,21.8],[70.5,22.3],[71.0,22.7],
-      [70.4,23.5],[70.0,24.0],[70.5,24.5],[71.0,25.0],[70.8,25.8],[71.5,26.0],
-      [72.0,26.5],[72.5,27.0],[73.0,27.5],[73.5,28.0],[73.8,28.5],[74.0,29.5],
-      [74.5,30.5],[75.0,31.0],[75.5,32.0],[76.0,32.5],[76.5,33.0],[77.0,33.5],
-      [77.5,34.0],[78.0,34.5],[78.5,35.0],[79.0,34.5],[80.0,34.5],[81.0,33.5],
-      [82.0,32.5],[83.0,31.0],[84.0,30.0],[85.0,29.5],[85.5,28.5],[86.0,28.0],
-      [87.0,27.5],[88.0,27.2],[88.5,27.0],[88.8,26.5],[89.5,26.5],[90.0,26.5],
-      [90.5,26.8],[91.0,26.5],[91.5,26.0],[92.0,25.5],[92.5,25.0],[93.0,24.5],
-      [93.5,24.0],[94.0,23.5],[94.5,23.0],[95.0,22.0],[95.5,21.5],[96.0,20.5],
-      [95.5,19.5],[95.0,18.5],[94.5,18.0],[93.5,18.5],[93.0,19.0],[92.5,19.5],
-      [92.0,20.0],[91.5,20.5],[91.0,21.0],[90.5,21.5],[90.0,22.0],[89.5,22.0],
-      [89.0,22.5],[88.5,22.5],[88.2,23.0],[88.5,23.5],[89.0,24.0],[89.5,24.5],
-      [89.0,25.0],[88.5,25.5],[88.0,25.0],[87.5,24.5],[87.0,24.0],[86.5,23.5],
-      [86.0,22.5],[85.5,22.0],[85.0,21.5],[84.5,21.0],[84.0,20.0],[83.5,19.0],
-      [83.0,18.0],[82.5,17.0],[82.0,16.5],[81.5,16.0],[81.0,15.5],[80.5,14.5],
-      [80.2,13.5],[80.0,13.0],[79.8,12.0],[79.5,11.5],[79.0,10.5],[78.5,10.0],
-      [78.2,9.5],[77.8,8.5],[77.5,8.2],[77.2,8.0],[76.8,8.3],[76.5,8.7],
-      [76.2,9.5],[75.8,10.5],[75.5,11.5],[75.2,12.5],[74.8,13.5],[74.5,14.5],
-      [74.2,15.0],[73.8,15.5],[73.5,16.0],[73.2,17.0],[73.0,18.0],[72.8,19.0],
-      [72.7,20.0],[72.5,21.0],[72.2,21.5],[71.8,22.0],[71.5,21.5],[71.0,21.0],
-      [70.5,21.5],[70.3,21.8],
+    // Layers: [sides, radius, speed, opacity, lineWidth]
+    const LAYERS = [
+      [3,  52,   0.008,  0.55, 1.2],
+      [4,  90,  -0.006,  0.40, 1.0],
+      [6,  128,  0.004,  0.32, 0.9],
+      [3,  162, -0.005,  0.24, 0.8],
+      [12, 196,  0.003,  0.18, 0.7],
+      [4,  228, -0.002,  0.14, 0.7],
+      [6,  258,  0.002,  0.10, 0.6],
     ];
 
-    const INDIA = INDIA_DEG.map(([lo, la]) => [lo * Math.PI / 180, la * Math.PI / 180] as [number, number]);
-
-    function project(lon: number, lat: number, rotY: number) {
-      const dLon = lon - rotY;
-      const x3 = Math.cos(lat) * Math.sin(dLon);
-      const y3 = Math.sin(lat);
-      const z3 = Math.cos(lat) * Math.cos(dLon);
-      // tilt to centre latitude
-      const tilt = -CLAT;
-      const y3t = y3 * Math.cos(tilt) - z3 * Math.sin(tilt);
-      const z3t = y3 * Math.sin(tilt) + z3 * Math.cos(tilt);
-      return { x: cx + x3 * R, y: cy - y3t * R, visible: z3t > -0.1 };
+    // Static dot ring at each polygon vertex
+    function polygon(n: number, r: number, angle: number) {
+      const pts: [number,number][] = [];
+      for (let i = 0; i < n; i++) {
+        const a = angle + (i / n) * Math.PI * 2;
+        pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+      }
+      return pts;
     }
-
-    const LATS = [-60,-45,-30,-15,0,15,30,45,60,75];
-    const LONS = Array.from({ length: 24 }, (_, i) => -180 + i * 15);
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-      t += 0.003;
-      // Very slight sway — stays centred on India
-      const rotY = CLON + Math.sin(t * 0.5) * 0.06;
+      t += 1;
 
-      // Globe fill
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(1,41,86,0.022)'; ctx.fill();
-
-      // Lat lines
-      LATS.forEach(latDeg => {
-        const lat = latDeg * Math.PI / 180;
-        ctx.beginPath();
-        let first = true;
-        for (let i = 0; i <= 120; i++) {
-          const lon = -Math.PI + (i / 120) * Math.PI * 2;
-          const p = project(lon, lat, rotY);
-          if (!p.visible) { first = true; continue; }
-          first ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-          first = false;
+      // Fine dot grid — very faint
+      for (let x = 0; x < W; x += 32) {
+        for (let y = 0; y < H; y += 32) {
+          const dx = x - cx, dy = y - cy;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist > 270) continue;
+          ctx.beginPath(); ctx.arc(x, y, 0.8, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(1,41,86,0.07)'; ctx.fill();
         }
-        ctx.strokeStyle = 'rgba(1,41,86,0.08)'; ctx.lineWidth = 0.6; ctx.stroke();
-      });
-
-      // Lon lines
-      LONS.forEach(lonDeg => {
-        const lon = lonDeg * Math.PI / 180;
-        ctx.beginPath();
-        let first = true;
-        for (let i = 0; i <= 60; i++) {
-          const lat = -Math.PI / 2 + (i / 60) * Math.PI;
-          const p = project(lon, lat, rotY);
-          if (!p.visible) { first = true; continue; }
-          first ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-          first = false;
-        }
-        ctx.strokeStyle = 'rgba(1,41,86,0.08)'; ctx.lineWidth = 0.6; ctx.stroke();
-      });
-
-      // Globe outline
-      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(1,41,86,0.2)'; ctx.lineWidth = 1.5; ctx.stroke();
-
-      // India — fill first then stroke border
-      ctx.beginPath();
-      let first = true;
-      INDIA.forEach(([lon, lat]) => {
-        const p = project(lon, lat, rotY);
-        if (!p.visible) { first = true; return; }
-        first ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-        first = false;
-      });
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(1,41,86,0.12)'; ctx.fill();
-      const pulse = (Math.sin(t * 50) + 1) / 2;
-      ctx.strokeStyle = `rgba(1,41,86,${0.7 + pulse * 0.25})`;
-      ctx.lineWidth = 2; ctx.stroke();
-
-      // India centre dot + label
-      const ic = project(78.5 * Math.PI/180, 20 * Math.PI/180, rotY);
-      if (ic.visible) {
-        ctx.beginPath(); ctx.arc(ic.x, ic.y, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(1,41,86,0.85)'; ctx.fill();
-        ctx.font = "600 9px 'DM Mono', monospace";
-        ctx.fillStyle = 'rgba(1,41,86,0.8)';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-        ctx.fillText('INDIA', ic.x, ic.y - 8);
       }
 
-      // Caption
-      ctx.font = "500 8.5px 'DM Mono', monospace";
-      ctx.fillStyle = 'rgba(1,41,86,0.35)';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText('SUPER CAPITAL · INDIA FOCUSED MANDATE', cx, cy + R + 18);
+      // Draw each rotating polygon
+      LAYERS.forEach(([n, r, spd, op, lw]) => {
+        const angle = t * spd;
+        const pts = polygon(n, r, angle);
+
+        // Polygon outline
+        ctx.beginPath();
+        pts.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+        ctx.closePath();
+        ctx.strokeStyle = `rgba(1,41,86,${op})`;
+        ctx.lineWidth = lw;
+        ctx.stroke();
+
+        // Vertex dots
+        pts.forEach(([x, y]) => {
+          ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(1,41,86,${(op * 1.4).toFixed(3)})`; ctx.fill();
+        });
+
+        // Spoke lines from centre to every other vertex (alternate layers only)
+        if (n <= 6) {
+          pts.forEach(([x, y], i) => {
+            if (i % 2 !== 0) return;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y);
+            ctx.strokeStyle = `rgba(1,41,86,${(op * 0.35).toFixed(3)})`;
+            ctx.lineWidth = 0.6; ctx.stroke();
+          });
+        }
+      });
+
+      // Cross-connect vertices of inner triangle to outer hexagon
+      const tri = polygon(3, 52, t * 0.008);
+      const hex = polygon(6, 128, t * 0.004);
+      tri.forEach(([tx, ty]) => {
+        hex.forEach(([hx, hy]) => {
+          ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(hx, hy);
+          ctx.strokeStyle = 'rgba(1,41,86,0.055)'; ctx.lineWidth = 0.5; ctx.stroke();
+        });
+      });
+
+      // Centre crosshair — tiny, precise
+      const cSize = 10;
+      ctx.beginPath();
+      ctx.moveTo(cx - cSize, cy); ctx.lineTo(cx + cSize, cy);
+      ctx.moveTo(cx, cy - cSize); ctx.lineTo(cx, cy + cSize);
+      ctx.strokeStyle = 'rgba(1,41,86,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(1,41,86,0.5)'; ctx.fill();
 
       raf = requestAnimationFrame(draw);
     }
+
     draw();
     return () => cancelAnimationFrame(raf);
   }, []);
   return <canvas ref={ref} width={480} height={460} style={{ display: 'block', maxWidth: '100%' }} />;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
