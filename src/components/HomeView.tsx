@@ -4,7 +4,7 @@ import { Target, Zap, Lock, Shield } from 'lucide-react';
 import type { AppView } from '../types';
 import {
   Label, Display, It, Card, CardTitle, CardBody,
-  Btn, Divider, Section, Grid, TwoCol, PageFooter,
+  Btn, Divider, Section, TwoCol, PageFooter,
 } from './UI';
 
 interface Props { setView: (v: AppView) => void; }
@@ -193,8 +193,8 @@ function QuantamentalWord() {
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
         color: '#012956',
-        opacity: 1,
-        marginTop: '-0.3rem',
+        opacity: 0.6,
+        marginTop: '0.15rem',
         paddingLeft: 2,
         fontWeight: 400,
       }}>
@@ -232,12 +232,11 @@ function MarqueeTicker() {
       height: '2.2rem',
       display: 'flex',
       alignItems: 'center',
-      marginTop: '4rem',
       marginBottom: '2.2rem',
     }}>
       <div style={{
         fontFamily: "'Cormorant Garamond', 'Instrument Serif', serif",
-        fontSize: 'clamp(1.6rem, 2.4vw, 2.2rem)',
+        fontSize: 'clamp(1.1rem, 1.6vw, 1.35rem)',
         fontWeight: 500,
         fontStyle: 'italic',
         color: 'var(--teal)',
@@ -401,10 +400,10 @@ export default function HomeView({ setView }: Props) {
             <div style={{ position:'absolute',right:'2vw',top:'50%',transform:'translateY(-46%)',zIndex:1,pointerEvents:'none' }}>
               <HeroOrrery />
             </div>
-            <div style={{ position:'relative',zIndex:2,flex:1,display:'flex',flexDirection:'column',justifyContent:'flex-start',padding:'100px 4.5vw 0' }}>
+            <div style={{ position:'relative',zIndex:2,flex:1,display:'flex',flexDirection:'column',justifyContent:'center',padding:'50px 5vw 0' }}>
               <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ duration:0.6 }}>
-                <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(8rem,8.5vw,15rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--ink)' }}>Super</div>
-                <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,15rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--teal)',fontStyle:'italic' }}>Capital</div>
+                <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--ink)' }}>Super</div>
+                <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--teal)',fontStyle:'italic' }}>Capital</div>
               </motion.div>
               <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.2,duration:0.6 }}>
                 <div style={{ marginBottom:'1rem',marginTop:'1.2rem' }}><QuantamentalWord /></div>
@@ -429,16 +428,22 @@ export default function HomeView({ setView }: Props) {
               <Label>About Super Capital</Label>
               <Display size="lg" style={{ marginBottom:'2rem' }}>Active research.<br /><It>Tactical precision.</It></Display>
               {/* Decorative graphic replaces paragraph */}
+            <div style={{ marginTop: 80, marginLeft: -100 }}></div>
               <AboutGraphic />
             </motion.div>
           </div>
-          <Grid cols={2} gap={14}>
+          <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
             {ABOUT_CARDS.map((c,i) => (
               <motion.div key={c.title} {...wv} transition={{ delay:i*0.1,duration:0.6 }}>
-                <Card style={{ height: '100%' }}><CardTitle>{c.title}</CardTitle><CardBody>{c.body}</CardBody></Card>
+                <div style={{ marginLeft: [100,100,100,100][i], marginRight: (ABOUT_CARDS.length - 1 - i) * 0 }}>
+                  <Card style={{ maxWidth: 360 }}>
+                    <CardTitle>{c.title}</CardTitle>
+                    <CardBody>{c.body}</CardBody>
+                  </Card>
+                </div>
               </motion.div>
             ))}
-          </Grid>
+          </div>
         </TwoCol>
       </Section>
 
@@ -458,7 +463,7 @@ export default function HomeView({ setView }: Props) {
               <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(2.4rem,4vw,4.2rem)',fontWeight:600,lineHeight:1.05,letterSpacing:'-0.025em',color:'#fff',marginBottom:'1rem' }}>
                 Super<br /><em style={{ fontStyle:'italic',color:'rgba(160,195,255,0.9)' }}>Performance</em><br />Series I
               </div>
-              <p style={{ fontSize:'0.92rem',color:'rgba(255,255,255,0.55)',lineHeight:1.8,maxWidth:400,marginBottom:'2rem' }}>An open ended Category III AIF deploying concentrated, research-led strategies across India's capital markets with dynamic risk overlays.</p>
+              <p style={{ fontSize:'0.92rem',color:'rgba(255,255,255,0.55)',lineHeight:1.8,maxWidth:400,marginBottom:'2rem' }}>A Category III AIF deploying concentrated, research-led strategies across India's capital markets with dynamic risk overlays.</p>
               <Btn variant="ghost" onClick={() => setView('fund')}>View Fund Details</Btn>
             </div>
             <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:12 }}>
