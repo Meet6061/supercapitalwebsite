@@ -205,8 +205,8 @@ export function FeeTable({ rows }: { rows: [string, string][] }) {
 export function PageFooter({ disc }: { disc: string }) {
   const mob = isMob();
   return (
-    <footer style={{ borderTop: '1px solid var(--border)', padding: '2rem 5vw', display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '1rem', flexWrap: 'wrap' }}>
-      <div style={{ fontSize: '0.88rem', fontWeight: 500 }}>Super Capital · Super Capital Trust</div>
+    <footer style={{ borderTop: '1px solid var(--border)', padding: '1rem 5vw', display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '1rem', flexWrap: 'wrap' }}>
+      <div style={{ fontSize: '0.88rem', fontWeight: 500 }}>Super Capital</div>
       <div style={{ fontSize: '0.72rem', color: 'var(--ink-3)', maxWidth: mob ? '100%' : 440, textAlign: mob ? 'left' : 'right', lineHeight: 1.55 }}>{disc}</div>
     </footer>
   );

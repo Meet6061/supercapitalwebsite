@@ -69,7 +69,7 @@ export default function ContactView() {
           </motion.div>
         </div>
       </Section>
-      <PageFooter disc="This inquiry does not constitute a solicitation of securities. SEBI Cat. III AIF." />
+      <PageFooter disc="© 2026 Super Capital | For Super Capital by Elevate Securities" />
     </div>
   );
 }

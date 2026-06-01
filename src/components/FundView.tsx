@@ -387,7 +387,7 @@ export default function FundView({ setView }: Props) {
         </motion.div>
       </section>
 
-      <PageFooter disc="Super Performance Series I is a Category III Alternative Investment Fund. SEBI Registered. For eligible investors only. Past performance is not indicative of future results. Capital at risk." />
+      <PageFooter disc="© 2026 Super Capital. For Super Capital by Elevate Securities" />
     </div>
   );
 }

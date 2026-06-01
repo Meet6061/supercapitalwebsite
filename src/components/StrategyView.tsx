@@ -585,7 +585,7 @@ export default function StrategyView() {
         </div>
       </section>
 
-      <PageFooter disc="Strategy descriptions are informational only. Not a guarantee of returns. SEBI Category III AIF. For eligible investors only." />
+      <PageFooter disc="© 2026 Super Capital | For Super Capital by Elevate Securities" />
     </div>
   );
 }
@@ -595,7 +595,7 @@ function PhilosophyList() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: false, margin: '-80px' });
   // Updated: removed "Long-term ownership", added "Tactical allocation" and "Active sector rotation"
-  const items = ['Tactical allocation', 'Active sector rotation', 'Research intensity', 'Capital efficiency', 'Risk-adjusted decision making'];
+  const items = ['Research intensity', 'Active sector rotation', 'Tactical Allocation', 'Capital efficiency', 'Risk-adjusted decision making'];
   return (
     <div ref={ref} style={{ display:'flex',flexDirection:'column',gap:0 }}>
       {items.map((item, i) => (
