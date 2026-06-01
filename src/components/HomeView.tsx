@@ -232,11 +232,13 @@ function MarqueeTicker() {
       height: '2.2rem',
       display: 'flex',
       alignItems: 'center',
-      marginBottom: '2.2rem',
+      marginTop : '-3rem',
+      marginBottom: '9rem',
+      
     }}>
       <div style={{
         fontFamily: "'Cormorant Garamond', 'Instrument Serif', serif",
-        fontSize: 'clamp(1.1rem, 1.6vw, 1.35rem)',
+        fontSize: 'clamp(3rem, 1.6vw, 1.35rem)',
         fontWeight: 500,
         fontStyle: 'italic',
         color: 'var(--teal)',
