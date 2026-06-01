@@ -37,16 +37,15 @@ export default function InvestorDashboard({ session, onBack }: Props) {
   return (
     <div style={{ minHeight:'100vh', background:'#F2F0EB', fontFamily:"'Bricolage Grotesque',sans-serif" }}>
 
-      {/* Header */}
+      {/* Site-style header */}
       <header style={{ background:'rgba(242,240,235,0.95)', backdropFilter:'blur(18px)', borderBottom:'1px solid rgba(0,0,0,0.09)', position:'sticky', top:0, zIndex:100 }}>
-        <div style={{ maxWidth:1100, margin:'0 auto', padding:'0 5vw', height:64, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'1.5rem' }}>
-            <img src={logoSrc} alt="Super Capital" style={{ height:44, mixBlendMode:'multiply' }} />
-            <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Mono',monospace", fontSize:'0.6rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'rgba(0,0,0,0.35)' }}>← Site</button>
+        <div style={{ maxWidth:1100, margin:'0 auto', padding:'0 5vw', height:90, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'1.5rem', height:'100%', padding:'12px 0 2px' }}>
+            <img src={logoSrc} alt="Super Capital" style={{ height:'225%', width:'200%', objectFit:'contain', objectPosition:'left center', cursor:'pointer' }} onClick={onBack} />
           </div>
-          <div style={{ display:'flex', alignItems:'center', gap:'1rem' }}>
-            <span style={{ fontSize:'0.8rem', color:'rgba(0,0,0,0.4)' }}>{session.user.email}</span>
-            <button onClick={signOut} style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.62rem', letterSpacing:'0.1em', textTransform:'uppercase', background:'none', border:'1px solid rgba(0,0,0,0.18)', borderRadius:100, padding:'6px 16px', cursor:'pointer', color:'rgba(0,0,0,0.45)' }}>Sign Out</button>
+          <div style={{ display:'flex', alignItems:'center', gap:'1.5rem' }}>
+            <span style={{ fontSize:'0.82rem', color:'rgba(0,0,0,0.4)' }}>{investor?.full_name || session.user.email}</span>
+            <button onClick={signOut} style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.68rem', letterSpacing:'0.1em', textTransform:'uppercase', background:'#0D0D0D', color:'#F2F0EB', border:'none', borderRadius:100, padding:'9px 22px', cursor:'pointer' }}>Sign Out</button>
           </div>
         </div>
       </header>
