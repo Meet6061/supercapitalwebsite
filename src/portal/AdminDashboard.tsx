@@ -4,11 +4,11 @@ import { supabase } from '../lib/supabase';
 import type { Lead, Investor } from '../lib/supabase';
 import logoSrc from '../components/logo.png';
 
-interface Props { session: Session; }
+interface Props { session: Session; onBack: () => void; }
 
 type AdminTab = 'leads'|'investors'|'nav'|'holdings';
 
-export default function AdminDashboard({ session: _session }: Props) {
+export default function AdminDashboard({ session: _session, onBack }: Props) {
   const [tab, setTab] = useState<AdminTab>('leads');
   const [leads, setLeads] = useState<Lead[]>([]);
   const [investors, setInvestors] = useState<Investor[]>([]);
@@ -37,7 +37,10 @@ export default function AdminDashboard({ session: _session }: Props) {
       <header style={{ background:'rgba(242,240,235,0.95)',backdropFilter:'blur(18px)',borderBottom:'1px solid rgba(0,0,0,0.09)',position:'sticky',top:0,zIndex:100 }}>
         <div style={{ maxWidth:1200,margin:'0 auto',padding:'0 5vw',height:64,display:'flex',alignItems:'center',justifyContent:'space-between' }}>
           <div style={{ display:'flex',alignItems:'center',gap:'1.2rem' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'1.2rem' }}>
             <img src={logoSrc} alt="Super Capital" style={{ height:44,mixBlendMode:'multiply' }} />
+            <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', fontFamily:"'DM Mono',monospace", fontSize:'0.6rem', letterSpacing:'0.12em', textTransform:'uppercase', color:'rgba(0,0,0,0.35)' }}>← Site</button>
+          </div>
             <span style={{ fontFamily:"'DM Mono',monospace",fontSize:'0.6rem',letterSpacing:'0.18em',textTransform:'uppercase',color:'rgba(1,41,86,0.55)',background:'rgba(1,41,86,0.08)',padding:'4px 10px',borderRadius:100 }}>Admin</span>
           </div>
           <button onClick={() => supabase.auth.signOut()}

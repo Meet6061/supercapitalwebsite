@@ -7,9 +7,31 @@ import FundView from './components/FundView';
 import StrategyView from './components/StrategyView';
 import ContactView from './components/ContactView';
 import AboutView from './components/AboutView';
+import InvestorPortal from './portal/InvestorPortal';
 
 export default function App() {
   const [view, setViewState] = useState<AppView>('home');
+  const [portalOpen, setPortalOpen] = useState(false);
+
+  // Check URL hash for portal route — so /portal works on direct access
+  useEffect(() => {
+    if (window.location.hash === '#portal') setPortalOpen(true);
+    const handler = () => {
+      if (window.location.hash === '#portal') setPortalOpen(true);
+      else setPortalOpen(false);
+    };
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
+
+  function openPortal() {
+    window.location.hash = 'portal';
+    setPortalOpen(true);
+  }
+  function closePortal() {
+    window.location.hash = '';
+    setPortalOpen(false);
+  }
 
   function setView(v: AppView) {
     setViewState(v);
@@ -25,9 +47,23 @@ export default function App() {
     document.head.appendChild(style);
   }, []);
 
+  // Portal overlay — completely separate from marketing site
+  if (portalOpen) {
+    return (
+      <div>
+        {/* Tiny back button — only visible on login screen, hidden once logged in */}
+        <button onClick={closePortal}
+          style={{ position:'fixed',top:16,left:16,zIndex:9999,background:'none',border:'none',cursor:'pointer',fontFamily:"'DM Mono',monospace",fontSize:'0.6rem',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(0,0,0,0.3)',padding:'6px 10px' }}>
+          ← Back to Site
+        </button>
+        <InvestorPortal />
+      </div>
+    );
+  }
+
   return (
     <>
-      <Header current={view} setView={setView} />
+      <Header current={view} setView={setView} onPortalClick={openPortal} />
       <AnimatePresence mode="wait">
         <motion.main
           key={view}

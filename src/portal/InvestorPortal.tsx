@@ -5,7 +5,9 @@ import LoginPage from './LoginPage';
 import InvestorDashboard from './InvestorDashboard';
 import AdminDashboard from './AdminDashboard';
 
-export default function InvestorPortal() {
+interface Props { onBack: () => void; }
+
+export default function InvestorPortal({ onBack }: Props) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -16,25 +18,24 @@ export default function InvestorPortal() {
       setIsAdmin(data.session?.user?.user_metadata?.is_admin === true);
       setLoading(false);
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
       setSession(session);
       setIsAdmin(session?.user?.user_metadata?.is_admin === true);
     });
+
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  if (loading) return <PortalLoader />;
-  if (!session) return <LoginPage />;
-  if (isAdmin) return <AdminDashboard session={session} />;
-  return <InvestorDashboard session={session} />;
-}
-
-function PortalLoader() {
-  return (
-    <div style={{ minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#F2F0EB' }}>
-      <div style={{ fontFamily:"'DM Mono',monospace",fontSize:'0.75rem',letterSpacing:'0.2em',color:'rgba(1,41,86,0.4)',textTransform:'uppercase' }}>
-        Loading…
+  if (loading) {
+    return (
+      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F2F0EB' }}>
+        <span style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.7rem', letterSpacing:'0.2em', color:'rgba(1,41,86,0.4)', textTransform:'uppercase' }}>Loading…</span>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!session) return <LoginPage onBack={onBack} />;
+  if (isAdmin) return <AdminDashboard session={session} onBack={onBack} />;
+  return <InvestorDashboard session={session} onBack={onBack} />;
 }
