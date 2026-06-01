@@ -400,13 +400,13 @@ export default function HomeView({ setView }: Props) {
             <div style={{ position:'absolute',right:'2vw',top:'50%',transform:'translateY(-46%)',zIndex:1,pointerEvents:'none' }}>
               <HeroOrrery />
             </div>
-            <div style={{ position:'relative',zIndex:2,flex:1,display:'flex',flexDirection:'column',justifyContent:'center',padding:'50px 5vw 0' }}>
+            <div style={{ position:'relative',zIndex:2,flex:1,display:'flex',flexDirection:'column',justifyContent:'flex-start',padding:'50px 5vw 0' }}>
               <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ duration:0.6 }}>
                 <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--ink)' }}>Super</div>
                 <div style={{ fontFamily:"'Cormorant Garamond','Instrument Serif',serif",fontSize:'clamp(4rem,7.5vw,8rem)',fontWeight:600,lineHeight:0.95,letterSpacing:'-0.03em',color:'var(--teal)',fontStyle:'italic' }}>Capital</div>
               </motion.div>
               <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.2,duration:0.6 }}>
-                <div style={{ marginBottom:'1rem',marginTop:'1.2rem' }}><QuantamentalWord /></div>
+                <div style={{ marginBottom:'10rem',marginTop:'1.2rem' }}><QuantamentalWord /></div>
               </motion.div>
               <motion.div initial={{ opacity:0,y:22 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.3,duration:0.6 }}>
                 <MarqueeTicker />
@@ -435,7 +435,7 @@ export default function HomeView({ setView }: Props) {
           <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
             {ABOUT_CARDS.map((c,i) => (
               <motion.div key={c.title} {...wv} transition={{ delay:i*0.1,duration:0.6 }}>
-                <div style={{ marginLeft: [100,100,100,100][i], marginRight: (ABOUT_CARDS.length - 1 - i) * 0 }}>
+                <div style={{ marginLeft: [160,160,160,160][i], marginRight: (ABOUT_CARDS.length - 1 - i) * 0 }}>
                   <Card style={{ maxWidth: 360 }}>
                     <CardTitle>{c.title}</CardTitle>
                     <CardBody>{c.body}</CardBody>
