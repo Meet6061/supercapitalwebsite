@@ -5,10 +5,10 @@ import logoSrc from '../components/logo.png';
 interface Props { onBack: () => void; }
 
 export default function LoginPage({ onBack }: Props) {
-  const [email, setEmail]     = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError]     = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
 
   async function login() {
     if (!email || !password) return;
@@ -18,18 +18,28 @@ export default function LoginPage({ onBack }: Props) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F2F0EB', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', background: '#F2F0EB', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
 
-      <button onClick={onBack} style={{ position: 'fixed', top: 20, left: 24, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Mono',monospace", fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', gap: 6 }}>
+      <button onClick={onBack} style={{ position: 'fixed', top: 20, left: 24, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Mono',monospace", fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)' }}>
         ← Back to Site
       </button>
 
-      {/* Large logo */}
-      <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
-        <img src={logoSrc} alt="Super Capital" style={{ height: 110, width: 'auto', mixBlendMode: 'multiply', display: 'block', margin: '0 auto' }} />
+      {/* Exact same logo as website header — mix-blend-mode multiply on light bg */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <img
+          src={logoSrc}
+          alt="Super Capital"
+          style={{
+            height: 120,
+            width: 'auto',
+            display: 'block',
+            objectFit: 'contain',
+            mixBlendMode: 'multiply',
+          }}
+        />
       </div>
 
-      {/* Card */}
+      {/* Login card */}
       <div style={{ width: '100%', maxWidth: 400, background: '#fff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 20, padding: '2.5rem 2rem' }}>
         <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2rem', fontWeight: 600, color: '#0D0D0D', letterSpacing: '-0.02em', marginBottom: '0.3rem' }}>
           Investor Login
