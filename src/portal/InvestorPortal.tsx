@@ -13,24 +13,45 @@ export default function InvestorPortal({ onBack }: Props) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setIsAdmin(data.session?.user?.user_metadata?.is_admin === true);
+    supabase.auth.getSession().then(async ({ data }) => {
+      const sess = data.session;
+      setSession(sess);
+      if (sess) {
+        const admin = await checkIfAdmin(sess);
+        setIsAdmin(admin);
+      }
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
-      setSession(session);
-      setIsAdmin(session?.user?.user_metadata?.is_admin === true);
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_e, sess) => {
+      setSession(sess);
+      if (sess) {
+        const admin = await checkIfAdmin(sess);
+        setIsAdmin(admin);
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  async function checkIfAdmin(sess: Session): Promise<boolean> {
+    // Check user metadata first
+    if (sess.user.user_metadata?.is_admin === true) return true;
+
+    // Fallback: check if this is the very first user (auto-admin)
+    // Count total users in investors table — if 0, this user is first = admin
+    const { count } = await supabase.from('investors').select('*', { count: 'exact', head: true });
+    if (count === 0) return true;
+
+    return false;
+  }
+
   if (loading) {
     return (
-      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F2F0EB' }}>
-        <span style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.7rem', letterSpacing:'0.2em', color:'rgba(1,41,86,0.4)', textTransform:'uppercase' }}>Loading…</span>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F2F0EB' }}>
+        <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(1,41,86,0.4)', textTransform: 'uppercase' }}>Loading…</span>
       </div>
     );
   }
