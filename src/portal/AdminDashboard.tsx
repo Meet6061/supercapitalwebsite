@@ -8,27 +8,31 @@ type AdminTab = 'investors' | 'nav';
 
 interface InvestorRecord {
   id: string;
-  user_id: string;
+  user_id: string | null;
   full_name: string;
   email: string;
-  folio_number: string;
-  commitment_cr: number;
-  drawdown_cr: number;
+  folio_number: string | null;
+  commitment_cr: number | null;
+  drawdown_cr: number | null;
   status: string;
   category: string;
-  joined_date: string;
+  joined_date: string | null;
   created_at: string;
 }
 
 export default function AdminDashboard({ session, onBack }: Props) {
-  const [tab, setTab] = useState<AdminTab>('investors');
+  const [tab, setTab]           = useState<AdminTab>('investors');
   const [investors, setInvestors] = useState<InvestorRecord[]>([]);
-  const [msg, setMsg] = useState('');
+  const [msg, setMsg]           = useState('');
 
-  useEffect(() => { loadInvestors(); }, []);
+  useEffect(() => { load(); }, []);
 
-  async function loadInvestors() {
-    const { data } = await supabase.from('investors').select('*').order('created_at', { ascending: false });
+  async function load() {
+    const { data, error } = await supabase
+      .from('investors')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) console.error('Load error:', error);
     setInvestors(data || []);
   }
 
@@ -36,9 +40,18 @@ export default function AdminDashboard({ session, onBack }: Props) {
 
   async function updateInvestor(id: string, updates: object) {
     const { error } = await supabase.from('investors').update(updates).eq('id', id);
-    if (error) flash(`Error: ${error.message}`);
-    else { flash('✓ Saved'); loadInvestors(); }
+    error ? flash(`Error: ${error.message}`) : flash('✓ Saved successfully');
+    load();
   }
+
+  async function deleteInvestor(id: string, email: string) {
+    if (!confirm(`Remove ${email} from investors? Their auth account will remain.`)) return;
+    const { error } = await supabase.from('investors').delete().eq('id', id);
+    error ? flash(`Error: ${error.message}`) : flash('✓ Removed');
+    load();
+  }
+
+  const totalCommitment = investors.reduce((s, i) => s + (i.commitment_cr || 0), 0);
 
   return (
     <div style={{ minHeight: '100vh', background: '#F2F0EB', fontFamily: "'Bricolage Grotesque',sans-serif" }}>
@@ -66,9 +79,9 @@ export default function AdminDashboard({ session, onBack }: Props) {
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: '2.5rem' }}>
           {[
-            { label: 'Total Investors',  value: investors.length },
-            { label: 'Active',           value: investors.filter(i => i.status === 'active').length },
-            { label: 'Total Commitment', value: `₹${investors.reduce((s, i) => s + (i.commitment_cr || 0), 0).toFixed(1)} Cr` },
+            { label: 'Total Investors',   value: investors.length },
+            { label: 'Active',            value: investors.filter(i => i.status === 'active').length },
+            { label: 'Total Commitment',  value: `₹${totalCommitment.toFixed(1)} Cr` },
           ].map(k => (
             <div key={k.label} style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 14, padding: '1.3rem 1.5rem' }}>
               <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.55rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', marginBottom: '0.5rem' }}>{k.label}</div>
@@ -82,13 +95,13 @@ export default function AdminDashboard({ session, onBack }: Props) {
           {(['investors', 'nav'] as AdminTab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
               style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '8px 20px', borderRadius: 100, border: 'none', cursor: 'pointer', background: tab === t ? '#fff' : 'transparent', color: tab === t ? '#012956' : 'rgba(0,0,0,0.4)', boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s' }}>
-              {t === 'investors' ? 'Manage Investors' : 'Upload NAV'}
+              {t === 'investors' ? 'Investors' : 'Upload NAV'}
             </button>
           ))}
         </div>
 
         {msg && (
-          <div style={{ marginBottom: '1.2rem', padding: '10px 18px', borderRadius: 10, background: msg.startsWith('✓') ? 'rgba(26,122,74,0.08)' : 'rgba(192,57,43,0.08)', color: msg.startsWith('✓') ? '#1a7a4a' : '#c0392b', fontSize: '0.82rem', fontFamily: "'DM Mono',monospace" }}>
+          <div style={{ marginBottom: '1.2rem', padding: '10px 18px', borderRadius: 10, background: msg.startsWith('✓') ? 'rgba(26,122,74,0.08)' : 'rgba(192,57,43,0.08)', color: msg.startsWith('✓') ? '#1a7a4a' : '#c0392b', fontSize: '0.82rem' }}>
             {msg}
           </div>
         )}
@@ -97,19 +110,45 @@ export default function AdminDashboard({ session, onBack }: Props) {
         {tab === 'investors' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-            {/* Add investor */}
-            <AddInvestorForm onSaved={() => { loadInvestors(); flash('✓ Investor added successfully'); }} />
+            {/* How to add notice */}
+            <div style={{ background: 'rgba(1,41,86,0.05)', border: '1px solid rgba(1,41,86,0.12)', borderRadius: 14, padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+              <div style={{ fontSize: '1.2rem', marginTop: 2 }}>ℹ️</div>
+              <div>
+                <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(1,41,86,0.7)', marginBottom: '0.4rem' }}>How to add a new investor</div>
+                <div style={{ fontSize: '0.85rem', color: 'rgba(0,0,0,0.55)', lineHeight: 1.7 }}>
+                  Go to <strong>Supabase Dashboard → Authentication → Users → Invite User</strong> and enter their email. They will receive a setup link. Their account will automatically appear here once created. Then click their row below to fill in investment details.
+                </div>
+              </div>
+            </div>
 
-            {/* List */}
+            {/* Investor list */}
             <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, overflow: 'hidden' }}>
               <div style={{ padding: '1.2rem 1.8rem', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.15rem', fontWeight: 600 }}>All Investors</div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.35)' }}>{investors.length} registered</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.35)' }}>{investors.length} registered</div>
+                  <button onClick={load} style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'none', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 100, padding: '5px 12px', cursor: 'pointer', color: 'rgba(0,0,0,0.4)' }}>↻ Refresh</button>
+                </div>
               </div>
+
+              {/* Table header */}
+              <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.2fr 1fr 1fr 1fr 80px', gap: 0, padding: '0.7rem 1.8rem', background: 'rgba(0,0,0,0.02)' }}>
+                {['Investor', 'Folio', 'Commitment', 'Category', 'Status', ''].map(h => (
+                  <div key={h} style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.55rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.38)' }}>{h}</div>
+                ))}
+              </div>
+
               {investors.length === 0
-                ? <div style={{ padding: '3rem', textAlign: 'center', color: 'rgba(0,0,0,0.28)', fontSize: '0.85rem' }}>No investors yet. Add one above.</div>
+                ? <div style={{ padding: '3rem', textAlign: 'center', color: 'rgba(0,0,0,0.28)', fontSize: '0.85rem' }}>
+                    No investors yet. Add users via Supabase Auth — they'll appear here automatically.
+                  </div>
                 : investors.map(inv => (
-                  <InvestorRow key={inv.id} inv={inv} onUpdate={(upd) => updateInvestor(inv.id, upd)} />
+                  <InvestorRow
+                    key={inv.id}
+                    inv={inv}
+                    onUpdate={upd => updateInvestor(inv.id, upd)}
+                    onDelete={() => deleteInvestor(inv.id, inv.email)}
+                  />
                 ))
               }
             </div>
@@ -124,96 +163,12 @@ export default function AdminDashboard({ session, onBack }: Props) {
   );
 }
 
-// ── Add Investor Form ──────────────────────────────────────────────────────────
-// Creates investor record only — auth user must be created separately via Supabase dashboard
-// OR via magic link / password reset email
-function AddInvestorForm({ onSaved }: { onSaved: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState('');
-  const [form, setForm] = useState({
-    full_name: '', email: '', folio_number: '',
-    commitment_cr: '', drawdown_cr: '', category: 'HNI',
-    joined_date: '', status: 'active',
-  });
-
-  function set(k: string, v: string) { setForm(f => ({ ...f, [k]: v })); }
-
-  async function submit() {
-    if (!form.full_name || !form.email) { setMsg('Name and email are required'); return; }
-    setLoading(true); setMsg('');
-
-    try {
-      // Step 1: Send magic link / password reset to investor so they can set their password
-      const { error: inviteErr } = await supabase.auth.resetPasswordForEmail(form.email, {
-        redirectTo: `${window.location.origin}#portal`,
-      });
-      if (inviteErr) throw new Error(`Could not send invite: ${inviteErr.message}`);
-
-      // Step 2: Insert investor record (user_id will be linked when they log in first time)
-      const { error: dbErr } = await supabase.from('investors').insert([{
-        user_id:       null, // will be updated when investor first logs in
-        full_name:     form.full_name,
-        email:         form.email,
-        folio_number:  form.folio_number || null,
-        commitment_cr: form.commitment_cr ? parseFloat(form.commitment_cr) : null,
-        drawdown_cr:   form.drawdown_cr ? parseFloat(form.drawdown_cr) : null,
-        category:      form.category,
-        joined_date:   form.joined_date || null,
-        status:        form.status,
-      }]);
-      if (dbErr) throw new Error(dbErr.message);
-
-      setMsg(`✓ Invite sent to ${form.email} — they can set their password via the link`);
-      setForm({ full_name:'', email:'', folio_number:'', commitment_cr:'', drawdown_cr:'', category:'HNI', joined_date:'', status:'active' });
-      onSaved();
-      setTimeout(() => { setMsg(''); setOpen(false); }, 4000);
-    } catch (err: any) {
-      setMsg(`Error: ${err.message}`);
-    }
-    setLoading(false);
-  }
-
-  return (
-    <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, overflow: 'hidden' }}>
-      <button onClick={() => setOpen(!open)}
-        style={{ width: '100%', padding: '1.2rem 1.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
-        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.15rem', fontWeight: 600, color: '#0D0D0D' }}>+ Add New Investor</div>
-        <span style={{ fontSize: '0.72rem', color: 'rgba(0,0,0,0.35)', fontFamily: "'DM Mono',monospace" }}>{open ? 'Close ↑' : 'Expand ↓'}</span>
-      </button>
-
-      {open && (
-        <div style={{ padding: '0 1.8rem 1.8rem', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-          <div style={{ padding: '1rem 0 1.2rem', fontSize: '0.82rem', color: 'rgba(0,0,0,0.45)', lineHeight: 1.6 }}>
-            Fill in the investor details and click <strong>Add Investor</strong>. A password-setup email will be sent to them automatically. They click the link, set their password, and can log in.
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <AF label="Full Name *"        value={form.full_name}     onChange={v => set('full_name', v)}     type="text"     placeholder="Investor full name" />
-            <AF label="Email *"             value={form.email}         onChange={v => set('email', v)}         type="email"    placeholder="investor@email.com" />
-            <AF label="Folio Number"        value={form.folio_number}  onChange={v => set('folio_number', v)}  type="text"     placeholder="SC-001" />
-            <AF label="Commitment (₹ Cr)"  value={form.commitment_cr} onChange={v => set('commitment_cr', v)} type="number"   placeholder="e.g. 2" />
-            <AF label="Amount Drawn (₹ Cr)" value={form.drawdown_cr}  onChange={v => set('drawdown_cr', v)}   type="number"   placeholder="e.g. 1.5" />
-            <AF label="Joined Date"         value={form.joined_date}   onChange={v => set('joined_date', v)}   type="date"     placeholder="" />
-            <div>
-              <div style={lbl}>Category</div>
-              <select value={form.category} onChange={e => set('category', e.target.value)} style={inp}>
-                {['HNI', 'Family Office', 'Institutional'].map(o => <option key={o}>{o}</option>)}
-              </select>
-            </div>
-          </div>
-          {msg && <div style={{ margin: '1rem 0 0', fontSize: '0.82rem', color: msg.startsWith('✓') ? '#1a7a4a' : '#c0392b', padding: '10px 14px', background: msg.startsWith('✓') ? 'rgba(26,122,74,0.06)' : 'rgba(192,57,43,0.06)', borderRadius: 8 }}>{msg}</div>}
-          <button onClick={submit} disabled={loading}
-            style={{ ...btn, marginTop: '1.2rem', opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}>
-            {loading ? 'Sending Invite…' : 'Add Investor & Send Invite'}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── Investor Row ───────────────────────────────────────────────────────────────
-function InvestorRow({ inv, onUpdate }: { inv: InvestorRecord; onUpdate: (upd: object) => void }) {
+function InvestorRow({ inv, onUpdate, onDelete }: {
+  inv: InvestorRecord;
+  onUpdate: (upd: object) => void;
+  onDelete: () => void;
+}) {
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState({
     full_name:     inv.full_name     || '',
@@ -228,11 +183,11 @@ function InvestorRow({ inv, onUpdate }: { inv: InvestorRecord; onUpdate: (upd: o
 
   function set(k: string, v: string) { setForm(f => ({ ...f, [k]: v })); }
 
-  async function sendPasswordReset() {
+  async function sendReset() {
     const { error } = await supabase.auth.resetPasswordForEmail(inv.email, {
       redirectTo: `${window.location.origin}#portal`,
     });
-    setPwMsg(error ? `Error: ${error.message}` : `✓ Password reset email sent to ${inv.email}`);
+    setPwMsg(error ? `Error: ${error.message}` : `✓ Reset email sent to ${inv.email}`);
     setTimeout(() => setPwMsg(''), 4000);
   }
 
@@ -240,59 +195,73 @@ function InvestorRow({ inv, onUpdate }: { inv: InvestorRecord; onUpdate: (upd: o
 
   return (
     <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-      {/* Row summary */}
-      <div onClick={() => setEdit(!edit)} style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.5fr 1fr 1fr 1fr 70px', gap: 0, padding: '1rem 1.8rem', cursor: 'pointer', alignItems: 'center' }}
+      {/* Collapsed row */}
+      <div onClick={() => setEdit(!edit)}
+        style={{ display: 'grid', gridTemplateColumns: '2.5fr 1.2fr 1fr 1fr 1fr 80px', gap: 0, padding: '1rem 1.8rem', cursor: 'pointer', alignItems: 'center', transition: 'background 0.15s' }}
         onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.015)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
         <div>
           <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>{inv.full_name}</div>
-          <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)', marginTop: 2 }}>{inv.email}</div>
+          <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.38)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+            {inv.email}
+            {!inv.user_id && <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.55rem', background: 'rgba(184,134,11,0.1)', color: '#b8860b', padding: '1px 6px', borderRadius: 4 }}>no auth</span>}
+          </div>
         </div>
         <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.75rem', color: 'rgba(0,0,0,0.45)' }}>{inv.folio_number || '—'}</div>
         <div style={{ fontSize: '0.82rem' }}>{inv.commitment_cr ? `₹${inv.commitment_cr} Cr` : '—'}</div>
-        <div style={{ fontSize: '0.82rem' }}>{inv.category}</div>
+        <div style={{ fontSize: '0.78rem', color: 'rgba(0,0,0,0.5)' }}>{inv.category}</div>
         <div>
           <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.58rem', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 100, background: `${statusColor[inv.status] || '#888'}18`, color: statusColor[inv.status] || '#888' }}>
             {inv.status}
           </span>
         </div>
-        <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.6rem', color: 'rgba(0,0,0,0.3)', textAlign: 'right' }}>{edit ? '↑' : '↓'}</div>
+        <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.6rem', color: 'rgba(0,0,0,0.3)', textAlign: 'right' }}>{edit ? '↑ close' : '↓ edit'}</div>
       </div>
 
       {/* Edit panel */}
       {edit && (
         <div style={{ padding: '1.5rem 1.8rem 2rem', borderTop: '1px solid rgba(0,0,0,0.04)', background: 'rgba(0,0,0,0.012)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '1.2rem' }}>
-            <AF label="Full Name"          value={form.full_name}     onChange={v => set('full_name', v)}     type="text"   />
-            <AF label="Folio Number"       value={form.folio_number}  onChange={v => set('folio_number', v)}  type="text"   />
-            <AF label="Commitment (₹ Cr)" value={form.commitment_cr} onChange={v => set('commitment_cr', v)} type="number" />
-            <AF label="Drawn (₹ Cr)"      value={form.drawdown_cr}   onChange={v => set('drawdown_cr', v)}   type="number" />
-            <AF label="Joined Date"        value={form.joined_date}   onChange={v => set('joined_date', v)}   type="date"   />
+            <AF label="Full Name"           value={form.full_name}     onChange={v => set('full_name', v)}     type="text"   />
+            <AF label="Folio Number"        value={form.folio_number}  onChange={v => set('folio_number', v)}  type="text"   />
+            <AF label="Commitment (₹ Cr)"  value={form.commitment_cr} onChange={v => set('commitment_cr', v)} type="number" />
+            <AF label="Drawn (₹ Cr)"       value={form.drawdown_cr}   onChange={v => set('drawdown_cr', v)}   type="number" />
+            <AF label="Joined Date"         value={form.joined_date}   onChange={v => set('joined_date', v)}   type="date"   />
             <div>
               <div style={lbl}>Status</div>
               <select value={form.status} onChange={e => set('status', e.target.value)} style={inp}>
                 {['active', 'exited', 'suspended'].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
+            <div>
+              <div style={lbl}>Category</div>
+              <select value={form.category} onChange={e => set('category', e.target.value)} style={inp}>
+                {['HNI', 'Family Office', 'Institutional'].map(o => <option key={o}>{o}</option>)}
+              </select>
+            </div>
           </div>
 
-          <button onClick={() => onUpdate({
-            full_name:     form.full_name,
-            folio_number:  form.folio_number || null,
-            commitment_cr: form.commitment_cr ? parseFloat(form.commitment_cr) : null,
-            drawdown_cr:   form.drawdown_cr ? parseFloat(form.drawdown_cr) : null,
-            status:        form.status,
-            category:      form.category,
-            joined_date:   form.joined_date || null,
-          })} style={btn}>Save Changes</button>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button onClick={() => onUpdate({
+              full_name:     form.full_name,
+              folio_number:  form.folio_number || null,
+              commitment_cr: form.commitment_cr ? parseFloat(form.commitment_cr) : null,
+              drawdown_cr:   form.drawdown_cr   ? parseFloat(form.drawdown_cr)   : null,
+              status:        form.status,
+              category:      form.category,
+              joined_date:   form.joined_date   || null,
+            })} style={btn}>Save Changes</button>
 
-          {/* Password reset */}
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-            <div style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(0,0,0,0.38)', marginBottom: '0.8rem' }}>Password Reset</div>
-            <div style={{ fontSize: '0.82rem', color: 'rgba(0,0,0,0.45)', marginBottom: '0.8rem' }}>Send a password reset email to {inv.email}</div>
-            <button onClick={sendPasswordReset} style={{ ...btn, background: 'rgba(0,0,0,0.06)', color: '#0D0D0D' }}>Send Reset Email</button>
-            {pwMsg && <div style={{ marginTop: '0.6rem', fontSize: '0.78rem', color: pwMsg.startsWith('✓') ? '#1a7a4a' : '#c0392b' }}>{pwMsg}</div>}
+            <button onClick={sendReset} style={{ ...btn, background: 'transparent', color: '#012956', border: '1px solid rgba(1,41,86,0.3)' }}>
+              Send Password Reset
+            </button>
+
+            <button onClick={onDelete} style={{ ...btn, background: 'transparent', color: '#c0392b', border: '1px solid rgba(192,57,43,0.3)', marginLeft: 'auto' }}>
+              Remove
+            </button>
           </div>
+
+          {pwMsg && <div style={{ marginTop: '0.8rem', fontSize: '0.78rem', color: pwMsg.startsWith('✓') ? '#1a7a4a' : '#c0392b' }}>{pwMsg}</div>}
         </div>
       )}
     </div>
@@ -328,7 +297,9 @@ function NavUploadPanel() {
   );
 }
 
-function AF({ label, value, onChange, type, placeholder }: { label: string; value: string; onChange: (v: string) => void; type: string; placeholder?: string }) {
+function AF({ label, value, onChange, type, placeholder }: {
+  label: string; value: string; onChange: (v: string) => void; type: string; placeholder?: string;
+}) {
   return (
     <div style={{ marginBottom: '0.9rem' }}>
       <div style={lbl}>{label}</div>
@@ -341,9 +312,8 @@ const lbl: React.CSSProperties = { fontFamily: "'DM Mono',monospace", fontSize: 
 const inp: React.CSSProperties = { width: '100%', background: '#F2F0EB', border: '1px solid rgba(0,0,0,0.12)', borderRadius: 10, padding: '10px 14px', fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '0.88rem', color: '#0D0D0D', outline: 'none', boxSizing: 'border-box', appearance: 'none' };
 const btn: React.CSSProperties = { fontFamily: "'DM Mono',monospace", fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '11px 24px', borderRadius: 100, background: '#012956', color: '#F2F0EB', border: 'none', cursor: 'pointer' };
 
-// Needed for type annotations
 interface InvestorRecord {
-  id: string; user_id: string; full_name: string; email: string;
-  folio_number: string; commitment_cr: number; drawdown_cr: number;
-  status: string; category: string; joined_date: string; created_at: string;
+  id: string; user_id: string | null; full_name: string; email: string;
+  folio_number: string | null; commitment_cr: number | null; drawdown_cr: number | null;
+  status: string; category: string; joined_date: string | null; created_at: string;
 }
