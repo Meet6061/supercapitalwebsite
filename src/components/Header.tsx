@@ -6,6 +6,7 @@ import logoSrc from './logo.png';
 interface HeaderProps {
   current: AppView;
   setView: (v: AppView) => void;
+  onPortalClick?: () => void;
 }
 
 const links: { view: AppView; label: string }[] = [
@@ -16,7 +17,7 @@ const links: { view: AppView; label: string }[] = [
   { view: 'contact',  label: 'Investor Inquiry' },
 ];
 
-export default function Header({ current, setView }: HeaderProps) {
+export default function Header({ current, setView, onPortalClick }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -61,7 +62,10 @@ export default function Header({ current, setView }: HeaderProps) {
 
         {/* Desktop CTA */}
         {!isMobile && (
-          <button style={s.cta} onClick={() => nav('contact')}>Connect</button>
+          <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
+            <button style={s.investorBtn} onClick={onPortalClick}>Investor Login</button>
+            <button style={s.cta} onClick={() => nav('contact')}>Connect</button>
+          </div>
         )}
 
         {/* Mobile hamburger */}
@@ -89,7 +93,10 @@ export default function Header({ current, setView }: HeaderProps) {
               {l.label}
             </button>
           ))}
-          <button style={{ ...s.cta, marginTop: '1rem', width: '100%' }} onClick={() => nav('contact')}>
+          <button style={{ ...s.cta, marginTop: '0.5rem', width: '100%', background:'transparent', color:'var(--ink)', border:'1px solid var(--border-md)' }} onClick={onPortalClick}>
+            Investor Login
+          </button>
+          <button style={{ ...s.cta, marginTop: '0.5rem', width: '100%' }} onClick={() => nav('contact')}>
             Connect
           </button>
         </div>
@@ -138,6 +145,14 @@ const s: Record<string, React.CSSProperties> = {
     padding: '9px 22px', borderRadius: 100,
     background: 'var(--ink)', color: 'var(--bg)',
     border: 'none', cursor: 'pointer',
+    flexShrink: 0,
+  },
+  investorBtn: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+    padding: '8px 18px', borderRadius: 100,
+    background: 'transparent', color: 'var(--ink-2)',
+    border: '1px solid var(--border-md)', cursor: 'pointer',
     flexShrink: 0,
   },
   hamburger: {
