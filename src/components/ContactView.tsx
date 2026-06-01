@@ -42,7 +42,6 @@ export default function ContactView() {
     if (!form.full_name || !form.email) return;
     setStatus('submitting');
     try {
-      // 1. Save to Supabase leads table
       const { error } = await supabase.from('leads').insert([{
         full_name:     form.full_name,
         organisation:  form.organisation,
@@ -53,16 +52,20 @@ export default function ContactView() {
         message:       form.message,
         status:        'new',
       }]);
-      if (error) throw error;
 
-      // 2. Trigger email notification (non-blocking)
-      await notifyNewLead(form);
+      if (error) {
+        console.error('Supabase error:', error.message, error.details, error.hint);
+        throw error;
+      }
+
+      // Fire-and-forget email — do NOT await, do NOT let it block success
+      notifyNewLead(form).catch(() => {});
 
       setStatus('success');
       setForm({ full_name:'', organisation:'', email:'', mobile:'',
                 investor_type:'High Net-Worth Individual', allocation:'', message:'' });
     } catch (err) {
-      console.error(err);
+      console.error('Form submit error:', err);
       setStatus('error');
     }
   }
