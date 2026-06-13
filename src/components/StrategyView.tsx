@@ -394,6 +394,29 @@ export default function StrategyView() {
                 Every capital decision flows through four interconnected stages — from research and analysis through to allocation and continuous monitoring.
               </Body>
             </motion.div>
+            <motion.div {...wv(1.2)} style={{ marginTop:'2rem' }}>
+              <a
+                href="/Super_Capital_Decision_Making_Framework.pdf"
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 10,
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: '0.72rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+                  padding: '13px 28px', borderRadius: 100,
+                  background: 'var(--ink)', color: 'var(--bg)',
+                  textDecoration: 'none', border: 'none', transition: 'all 0.2s',
+                }}
+              >
+                Explore Strategy in Detail
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3v12" />
+                  <path d="M7 10l5 5 5-5" />
+                  <path d="M5 21h14" />
+                </svg>
+              </a>
+            </motion.div>
           </div>
           <motion.div initial={{ opacity:0,x:30 }} animate={{ opacity:1,x:0 }} transition={{ delay:0.4,duration:0.8 }} style={{ display:'flex',justifyContent:'center' }}>
             <StrategyHeroCanvas />
