@@ -60,8 +60,8 @@ function PhotoCard({ photo, name, delay, mobileHeight }: { photo: string; name: 
   );
 }
 
-function LeaderCard({ name, role, bio, qualifications, initials, delay, compact }: {
-  name: string; role: string; bio: string; qualifications: string[]; initials: string; delay: number; compact?: boolean;
+function LeaderCard({ name, role, bio, qualifications, delay, compact }: {
+  name: string; role: string; bio: string; qualifications: string[]; delay: number; compact?: boolean;
 }) {
   const [hov, setHov] = useState(false);
   return (
