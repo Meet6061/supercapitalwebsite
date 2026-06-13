@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Label, Display, It, Body, Section, PageFooter } from './UI';
+import meetPhoto from './Meet.png';
+import naishadhPhoto from './Naishadh.jpeg';
 
 function useMobile() {
   const [mob, setMob] = useState(window.innerWidth <= 768);
@@ -19,6 +21,45 @@ const fade = (i = 0) => ({
   transition: { delay: i * 0.1, duration: 0.6 },
 });
 
+// ── Image card — sits alongside the existing name card ──────────────────────
+function PhotoCard({ photo, name, delay }: { photo: string; name: string; delay: number }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <motion.div {...fade(delay)}>
+      <div
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        style={{
+          background: 'var(--bg-card)',
+          border: `1px solid ${hov ? 'rgba(1,41,86,0.28)' : 'var(--border)'}`,
+          borderRadius: 20,
+          overflow: 'hidden',
+          height: '100%',
+          minHeight: 360,
+          transition: 'all 0.42s cubic-bezier(.22,.8,.4,1)',
+          transform: hov ? 'translateY(-6px)' : 'none',
+          boxShadow: hov ? '0 28px 72px rgba(1,41,86,0.08)' : '0 1px 4px rgba(0,0,0,0.03)',
+          position: 'relative',
+        }}
+      >
+        <img
+          src={photo}
+          alt={name}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            filter: hov ? 'none' : 'saturate(0.92)',
+            transition: 'filter 0.42s',
+          }}
+        />
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, transparent 60%, rgba(1,41,86,0.12) 100%)', pointerEvents:'none' }} />
+      </div>
+    </motion.div>
+  );
+}
+
 function LeaderCard({ name, role, bio, qualifications, initials, delay }: {
   name: string; role: string; bio: string; qualifications: string[]; initials: string; delay: number;
 }) {
@@ -35,7 +76,7 @@ function LeaderCard({ name, role, bio, qualifications, initials, delay }: {
           transition: 'all 0.42s cubic-bezier(.22,.8,.4,1)',
           transform: hov ? 'translateY(-6px)' : 'none',
           boxShadow: hov ? '0 28px 72px rgba(1,41,86,0.08)' : '0 1px 4px rgba(0,0,0,0.03)',
-          cursor: 'default', position: 'relative', overflow: 'hidden',
+          cursor: 'default', position: 'relative', overflow: 'hidden', height: '100%',
         }}
       >
         <div style={{ position:'absolute',top:0,left:'8%',right:'8%',height:1,background:`linear-gradient(90deg,transparent,rgba(1,41,86,${hov?0.55:0.15}),transparent)`,transition:'opacity 0.42s' }} />
@@ -119,12 +160,19 @@ export default function AboutView() {
           </Display>
         </motion.div>
 
-        <div style={{ display:'grid',gridTemplateColumns: mob ? '1fr' : '1fr 1fr',gap:'2rem' }}>
+        {/* Meet Patel — Image card + Name card */}
+        <div style={{ display:'grid',gridTemplateColumns: mob ? '1fr' : '1fr 2fr',gap:'2rem',marginBottom:'2rem' }}>
+          <PhotoCard photo={meetPhoto} name="Meet Patel" delay={3} />
           <LeaderCard
             delay={3} initials="MP" name="Meet Patel" role="Fund Manager & Designated Partner"
             bio="Meet is fund manager at Super Fund Managers LLP and is actively involved in investment research, portfolio oversight, and operational management. His experience spans investment analysis, financial planning, portfolio construction, and advisory support within regulated financial markets."
             qualifications={['CFA','MBA (Finance), IMT Ghaziabad','NISM Category III AIF Managers Certification']}
           />
+        </div>
+
+        {/* Naishadh Patel — Image card + Name card */}
+        <div style={{ display:'grid',gridTemplateColumns: mob ? '1fr' : '1fr 2fr',gap:'2rem' }}>
+          <PhotoCard photo={naishadhPhoto} name="Naishadh Patel" delay={4} />
           <LeaderCard
             delay={4} initials="NP" name="Naishadh Patel" role="Business Development & Designated Partner"
             bio="Naishadh is a member of the key investment team at Super Fund Managers LLP and brings extensive experience across banking, client relationship management, credit assessment, and financial product distribution. His background spans retail banking, HNI client management, branch leadership, and corporate relationship management."
