@@ -163,7 +163,7 @@ export default function AboutView() {
             <div style={{ display:'grid',gridTemplateColumns:'1fr 2fr',gap:'2rem',marginBottom:'2rem' }}>
               <PhotoCard photo={meetPhoto} name="Meet Patel" delay={3} mobileHeight={260} />
               <LeaderCard
-                delay={3} initials="MP" name="Meet Patel" role="Fund Manager & Designated Partner"
+                delay={3} name="Meet Patel" role="Fund Manager & Designated Partner"
                 bio="Meet is fund manager at Super Fund Managers LLP and is actively involved in investment research, portfolio oversight, and operational management. His experience spans investment analysis, financial planning, portfolio construction, and advisory support within regulated financial markets."
                 qualifications={['CFA','MBA (Finance), IMT Ghaziabad','NISM Category III AIF Managers Certification']}
               />
@@ -171,7 +171,7 @@ export default function AboutView() {
             <div style={{ display:'grid',gridTemplateColumns:'1fr 2fr',gap:'2rem' }}>
               <PhotoCard photo={naishadhPhoto} name="Naishadh Patel" delay={4} mobileHeight={260} />
               <LeaderCard
-                delay={4} initials="NP" name="Naishadh Patel" role="Business Development & Designated Partner"
+                delay={4} name="Naishadh Patel" role="Business Development & Designated Partner"
                 bio="Naishadh handles Business Development and Operational Activities at Super Fund Managers LLP and brings extensive experience across banking, client relationship management, credit assessment, and financial product distribution. His background spans retail banking, HNI client management, branch leadership, and corporate relationship management."
                 qualifications={['MBA (Finance)','Bachelor of Commerce (B.Com)']}
               />
@@ -182,14 +182,14 @@ export default function AboutView() {
             <PhotoCard photo={meetPhoto} name="Meet Patel" delay={3} />
             <LeaderCard
               compact
-              delay={3} initials="MP" name="Meet Patel" role="Fund Manager & Designated Partner"
+              delay={3} name="Meet Patel" role="Fund Manager & Designated Partner"
               bio="Meet is fund manager at Super Fund Managers LLP and is actively involved in investment research, portfolio oversight, and operational management. His experience spans investment analysis, financial planning, portfolio construction, and advisory support within regulated financial markets."
               qualifications={['CFA','MBA (Finance), IMT Ghaziabad','NISM Category III AIF Managers Certification']}
             />
             <PhotoCard photo={naishadhPhoto} name="Naishadh Patel" delay={4} />
             <LeaderCard
               compact
-              delay={4} initials="NP" name="Naishadh Patel" role="Business Development & Designated Partner"
+              delay={4} name="Naishadh Patel" role="Business Development & Designated Partner"
               bio="Naishadh handles Business Development and Operational Activities at Super Fund Managers LLP and brings extensive experience across banking, client relationship management, credit assessment, and financial product distribution. His background spans retail banking, HNI client management, branch leadership, and corporate relationship management."
               qualifications={['MBA (Finance)','Bachelor of Commerce (B.Com)']}
             />
