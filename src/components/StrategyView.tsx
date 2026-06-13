@@ -608,7 +608,7 @@ export default function StrategyView() {
         </div>
       </section>
 
-      <PageFooter disc="© 2026 Super Capital | For Super Capital by Elevate Securities" />
+      <PageFooter disc="© 2026 Super Capital" />
     </div>
   );
 }
