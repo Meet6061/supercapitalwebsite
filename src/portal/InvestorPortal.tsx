@@ -7,56 +7,45 @@ import AdminDashboard from './AdminDashboard';
 
 interface Props { onBack: () => void; }
 
+// Admin emails hardcoded as final fallback — all auth via user_metadata.is_admin
+const ADMIN_EMAILS = ['kjshah1913@gmail.com', 'patel.meet1995@gmail.com'];
+
 export default function InvestorPortal({ onBack }: Props) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       const sess = data.session;
       setSession(sess);
-      if (sess) {
-        const admin = await checkIfAdmin(sess);
-        setIsAdmin(admin);
-      }
+      if (sess) setIsAdmin(checkAdmin(sess));
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_e, sess) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, sess) => {
       setSession(sess);
-      if (sess) {
-        const admin = await checkIfAdmin(sess);
-        setIsAdmin(admin);
-      } else {
-        setIsAdmin(false);
-      }
+      setIsAdmin(sess ? checkAdmin(sess) : false);
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  async function checkIfAdmin(sess: Session): Promise<boolean> {
-    // Check user metadata first
+  function checkAdmin(sess: Session): boolean {
+    // Primary: user_metadata flag set by admin-users edge function
     if (sess.user.user_metadata?.is_admin === true) return true;
-
-    // Fallback: check if this is the very first user (auto-admin)
-    // Count total users in investors table — if 0, this user is first = admin
-    const { count } = await supabase.from('investors').select('*', { count: 'exact', head: true });
-    if (count === 0) return true;
-
+    // Fallback: known admin emails
+    if (ADMIN_EMAILS.includes(sess.user.email || '')) return true;
     return false;
   }
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F2F0EB' }}>
-        <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(1,41,86,0.4)', textTransform: 'uppercase' }}>Loading…</span>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F2F0EB' }}>
+      <span style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.7rem', letterSpacing:'0.2em', color:'rgba(1,41,86,0.4)', textTransform:'uppercase' }}>Loading…</span>
+    </div>
+  );
 
   if (!session) return <LoginPage onBack={onBack} />;
-  if (isAdmin) return <AdminDashboard session={session} onBack={onBack} />;
-  return <InvestorDashboard session={session} onBack={onBack} />;
+  if (isAdmin)  return <AdminDashboard  session={session} onBack={onBack} />;
+  return               <InvestorDashboard session={session} onBack={onBack} />;
 }
