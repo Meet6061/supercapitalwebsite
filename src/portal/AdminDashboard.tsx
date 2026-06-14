@@ -109,7 +109,7 @@ export default function AdminDashboard({ session, onBack }: Props) {
       <header style={{ background:'rgba(242,240,235,0.97)', backdropFilter:'blur(18px)', borderBottom:'1px solid rgba(0,0,0,0.09)', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ maxWidth:1340, margin:'0 auto', padding:'0 2rem', height:72, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'2rem' }}>
-            <img src={logoSrc} alt="Super Capital" onClick={onBack} style={{ height:52, width:'auto', objectFit:'contain', cursor:'pointer' }} />
+            <img src={logoSrc} alt="Super Capital" onClick={onBack} style={{ height:150, width:'auto', objectFit:'contain', cursor:'pointer' }} />
             <span style={s.badge('#012956')}>Admin Portal</span>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:'1.5rem' }}>

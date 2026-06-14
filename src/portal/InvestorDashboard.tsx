@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { NAV_SERIES, HOLDINGS, SECTOR_ALLOCATION, getMockClientByEmail, getMockStatements, getMockInvestments } from '../lib/mockData';
+import { generateStatementPDF } from '../lib/pdfGenerator';
 import logoSrc from '../components/logo.png';
 
 interface Props { session: Session; onBack: () => void; }
@@ -297,6 +298,39 @@ function PortfolioPage() {
 // STATEMENTS PAGE
 // ══════════════════════════════════════════════════════════════════════════════
 function StatementsPage({ statements, client, totalInv }: { statements: StatRow[]; client: ClientRow | null; totalInv: number }) {
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  async function downloadPDF() {
+    if (!client) return;
+    setPdfLoading(true);
+    try {
+      // Convert logo to base64 for embedding in PDF
+      const resp = await fetch(logoSrc);
+      const blob = await resp.blob();
+      const reader = new FileReader();
+      const logoB64: string = await new Promise(res => {
+        reader.onloadend = () => res((reader.result as string).split(',')[1]);
+        reader.readAsDataURL(blob);
+      });
+      await generateStatementPDF(
+        {
+          full_name:    client.full_name,
+          folio_number: client.folio_number,
+          pan:          client.pan,
+          category:     client.category,
+          joined_date:  client.joined_date,
+          email:        client.email,
+        },
+        statements,
+        logoB64
+      );
+    } catch (e) {
+      console.error('PDF error:', e);
+      alert('PDF generation failed. Please try again.');
+    }
+    setPdfLoading(false);
+  }
+
   return (
     <div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'2rem' }}>
@@ -305,9 +339,10 @@ function StatementsPage({ statements, client, totalInv }: { statements: StatRow[
           <div style={{ fontSize:'0.8rem', color:'rgba(0,0,0,0.38)', marginTop:'0.3rem' }}>Full history of your portfolio valuation</div>
         </div>
         <button
-          onClick={() => alert('PDF generation coming — see InvestorPDFReport component')}
-          style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.68rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'11px 24px', borderRadius:100, background:'#012956', color:'#F2F0EB', border:'none', cursor:'pointer' }}>
-          ↓ Download PDF
+          onClick={downloadPDF}
+          disabled={pdfLoading}
+          style={{ fontFamily:"'DM Mono',monospace", fontSize:'0.68rem', letterSpacing:'0.12em', textTransform:'uppercase', padding:'11px 24px', borderRadius:100, background:'#012956', color:'#F2F0EB', border:'none', cursor: pdfLoading ? 'not-allowed' : 'pointer', opacity: pdfLoading ? 0.6 : 1 }}>
+          {pdfLoading ? 'Generating…' : '↓ Download PDF'}
         </button>
       </div>
 
