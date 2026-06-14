@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { createUser, changePassword, deleteAuthUser } from '../lib/adminApi';
-import { NAV_SERIES, HOLDINGS, SECTOR_ALLOCATION } from '../lib/mockData';
+import { HOLDINGS, SECTOR_ALLOCATION } from '../lib/mockData';
 import logoSrc from '../components/logo.png';
 
 interface Props { session: Session; onBack: () => void; }
@@ -92,7 +92,7 @@ export default function AdminDashboard({ session, onBack }: Props) {
     setPage('client_profile');
   }
 
-  const totalAUM = clients.reduce((sum, _) => sum + 0, 0); // will compute from investments in production
+  // AUM computed from investments in production
   const latestNAV = navData[0];
 
   const navItems: { label: string; page: AdminPage; icon: string }[] = [
@@ -200,7 +200,7 @@ function DashboardPage({ clients, latestNAV, onGoClients, onGoUsers }: { clients
 // ══════════════════════════════════════════════════════════════════════════════
 // PAGE: USERS (auth user management)
 // ══════════════════════════════════════════════════════════════════════════════
-function UsersPage({ session, flash, onClientCreated }: { session: Session; flash: (m: string) => void; onClientCreated: () => void }) {
+function UsersPage({ session, onClientCreated }: { session: Session; flash?: (m: string) => void; onClientCreated: () => void }) {
   const [form, setForm] = useState({ full_name:'', email:'', password:'', role:'investor', folio_number:'', category:'HNI', joined_date:'', pan:'', phone:'' });
   const [loading, setLoading] = useState(false);
   const [localMsg, setLocalMsg] = useState('');
@@ -290,7 +290,7 @@ function UsersPage({ session, flash, onClientCreated }: { session: Session; flas
 // ══════════════════════════════════════════════════════════════════════════════
 // PAGE: CLIENTS (table view of all clients)
 // ══════════════════════════════════════════════════════════════════════════════
-function ClientsPage({ clients, onRefresh, flash, onOpenProfile }: { clients: Client[]; onRefresh: () => void; flash: (m: string) => void; onOpenProfile: (c: Client) => void }) {
+function ClientsPage({ clients, onRefresh, onOpenProfile }: { clients: Client[]; onRefresh: () => void; flash?: (m: string) => void; onOpenProfile: (c: Client) => void }) {
   const [search, setSearch]   = useState('');
   const [statusF, setStatusF] = useState('all');
 
