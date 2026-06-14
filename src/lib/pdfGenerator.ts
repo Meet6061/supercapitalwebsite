@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { FUND_META, NAV_SERIES, HOLDINGS, SECTOR_ALLOCATION } from './mockData';
+import { FUND_META, HOLDINGS, SECTOR_ALLOCATION } from './mockData';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COLOURS
